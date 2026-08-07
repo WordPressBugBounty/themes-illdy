@@ -24,14 +24,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_full_width_general_show', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_full_width_general_show', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Show this section?', 'illdy' ),
 			'section'  => $panel_id,
 			'priority' => 1,
 		)
-	)
 );
 
 // Show this section
@@ -43,14 +41,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_full_width_padding', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_full_width_padding', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Add padding to section ?', 'illdy' ),
 			'section'  => $panel_id,
 			'priority' => 1,
 		)
-	)
 );
 
 // Title
@@ -83,12 +79,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Text_Editor(
+	new Illdy_Control_Text_Editor(
 		$wp_customize, $prefix . '_full_width_general_entry', array(
 			'label'       => __( 'Entry', 'illdy' ),
 			'section'     => $panel_id,
 			'priority'    => 3,
-			'type'        => 'epsilon-text-editor',
+			'type'        => 'illdy-text-editor',
 		)
 	)
 );
@@ -104,7 +100,7 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Button(
+	new Illdy_Control_Button(
 		$wp_customize, $prefix . '_full_width_widget_button', array(
 			'text'       => __( 'Add & Edit widgets', 'illdy' ),
 			'section_id' => 'sidebar-widgets-front-page-full-width-sidebar',
@@ -121,9 +117,9 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Tab(
+	new Illdy_Control_Tab(
 		$wp_customize, $prefix . '_full_width_tab', array(
-			'type'    => 'epsilon-tab',
+			'type'    => 'illdy-tab',
 			'section' => $panel_id,
 			'buttons' => array(
 				array(
@@ -223,13 +219,11 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_full_width_background_repeat', array(
-			'type'    => 'epsilon-toggle',
+	$prefix . '_full_width_background_repeat', array(
+			'type'    => 'checkbox',
 			'label'   => __( 'Repeat Background Image', 'illdy' ),
 			'section' => $panel_id,
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -241,13 +235,11 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_full_width_background_attachment', array(
-			'type'    => 'epsilon-toggle',
+	$prefix . '_full_width_background_attachment', array(
+			'type'    => 'checkbox',
 			'label'   => __( 'Scroll with Page', 'illdy' ),
 			'section' => $panel_id,
 		)
-	)
 );
 
 $wp_customize->add_setting(

@@ -24,14 +24,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_latest_news_general_show', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_latest_news_general_show', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Show this section?', 'illdy' ),
 			'section'  => $prefix . '_latest_news_general',
 			'priority' => 1,
 		)
-	)
 );
 
 // Title
@@ -67,12 +65,12 @@ if ( get_theme_mod( $prefix . '_latest_news_general_entry' ) ) {
 		)
 	);
 	$wp_customize->add_control(
-		new Epsilon_Control_Text_Editor(
+		new Illdy_Control_Text_Editor(
 			$wp_customize, $prefix . '_latest_news_general_entry', array(
 				'label'    => __( 'Entry', 'illdy' ),
 				'section'  => $prefix . '_latest_news_general',
 				'priority' => 3,
-				'type'     => 'epsilon-text-editor',
+				'type'     => 'illdy-text-editor',
 			)
 		)
 	);
@@ -90,6 +88,7 @@ if ( get_theme_mod( $prefix . '_latest_news_general_entry' ) ) {
 		new Illdy_Text_Custom_Control(
 			$wp_customize, $prefix . '_latest_news_general_entry', array(
 				'label'       => __( 'Install Illdy Companion', 'illdy' ),
+				/* translators: %s: URL of the Recommended Plugins tab where Illdy Companion can be installed. */
 				'description' => sprintf( __( 'In order to edit description please install <a href="%s" target="_blank">Illdy Companion</a>', 'illdy' ), illdy_get_recommended_actions_url() ),
 				'section'     => $panel_id,
 				'settings'    => $prefix . '_latest_news_general_text',
@@ -137,11 +136,11 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Slider(
-		$wp_customize, $prefix . '_latest_news_number_of_posts', array(
+	$prefix . '_latest_news_number_of_posts', array(
+		'type'        => 'range',
 			'label'       => esc_html__( 'Number of posts', 'illdy' ),
 			'description' => esc_html__( 'Add the number of posts to show in this section.', 'illdy' ),
-			'choices'     => array(
+			'input_attrs'     => array(
 				'min'  => 3,
 				'max'  => 9,
 				'step' => 3,
@@ -149,7 +148,6 @@ $wp_customize->add_control(
 			'section'     => $prefix . '_latest_news_general',
 			'priority'    => 5,
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -161,10 +159,10 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Slider(
-		$wp_customize, $prefix . '_latest_news_words_number', array(
+	$prefix . '_latest_news_words_number', array(
+		'type'        => 'range',
 			'label'    => esc_html__( 'Number of words in post entry', 'illdy' ),
-			'choices'  => array(
+			'input_attrs'  => array(
 				'min'  => 20,
 				'max'  => 100,
 				'step' => 10,
@@ -172,7 +170,6 @@ $wp_customize->add_control(
 			'section'  => $prefix . '_latest_news_general',
 			'priority' => 6,
 		)
-	)
 );
 
 // Colors
@@ -184,9 +181,9 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Tab(
+	new Illdy_Control_Tab(
 		$wp_customize, $prefix . '_latest_news_tab', array(
-			'type'    => 'epsilon-tab',
+			'type'    => 'illdy-tab',
 			'section' => $prefix . '_latest_news_general',
 			'buttons' => array(
 				array(
@@ -295,13 +292,11 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_latest_news_background_repeat', array(
-			'type'    => 'epsilon-toggle',
+	$prefix . '_latest_news_background_repeat', array(
+			'type'    => 'checkbox',
 			'label'   => __( 'Repeat Background Image', 'illdy' ),
 			'section' => $prefix . '_latest_news_general',
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -313,13 +308,11 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_latest_news_background_attachment', array(
-			'type'    => 'epsilon-toggle',
+	$prefix . '_latest_news_background_attachment', array(
+			'type'    => 'checkbox',
 			'label'   => __( 'Scroll with Page', 'illdy' ),
 			'section' => $prefix . '_latest_news_general',
 		)
-	)
 );
 
 

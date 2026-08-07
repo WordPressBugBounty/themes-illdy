@@ -263,29 +263,29 @@ ul.accordion-section {
 }
 
 /* Tab Custom Control */
-.epsilon-tabs {
+.illdy-tabs {
     margin-left: -12px;
     margin-right: -12px;
     padding: 0 12px;
 }
-.epsilon-after-tab {
+.illdy-after-tab {
     margin-left: -12px;
     margin-right: -12px;
 }
-.epsilon-after-tab > div {
+.illdy-after-tab > div {
     background: #f4f4f4;
     height: 30px;
     width: 100%;
 }
-.epsilon-tabs .tabs {
+.illdy-tabs .tabs {
     text-align: center;
     padding-top: 5px;
     overflow: hidden;
 }
-/*a.epsilon-tab:first-child {
+/*a.illdy-tab:first-child {
     border-left: 1px solid #CCC;
 }*/
-a.epsilon-tab {
+a.illdy-tab {
     width: 120px;
     text-align: center;
     display: inline-block;
@@ -300,10 +300,10 @@ a.epsilon-tab {
     margin-right: 5px;
     line-height: 32px;
 }
-a.epsilon-tab:focus {
+a.illdy-tab:focus {
     outline: none;
 }
-a.epsilon-tab.active {
+a.illdy-tab.active {
     /*border-bottom-color: #f1f1f1;*/
     background-color: #f4f4f4;
 }
@@ -314,7 +314,7 @@ a.epsilon-tab.active {
     background: #f4f4f4;
     margin-bottom: 0;
 }
-.customize-control.customize-control-epsilon-tab {
+.customize-control.customize-control-illdy-tab {
     margin-bottom: 0;
 }
 
@@ -337,7 +337,7 @@ a.epsilon-tab.active {
 
 /* Widget Button */
 
-a.epsilon-button {
+a.illdy-button {
     font-size: 16px;
     text-align: center;
     display: block;
@@ -375,91 +375,52 @@ a.epsilon-button {
     margin-right: 15px;
     min-width: 75px;
 }
-div.recomended-actions_container {
-    padding: 0 10px;
-    margin-bottom: 2em;
-}
-.epsilon-recommeded-actions p.title {
-    margin-bottom: 0;
-    font-size: 14px;
-    color: #555d66;
-    font-weight: 600;
-    padding-right: 20px;
-}
-.epsilon-recommeded-actions div.description {
-    font-size: 12px;
-}
-.epsilon-recommeded-actions .custom-action {
-    border-top: 1px solid #fafafa;
-    margin-top: 1em;
-    padding-top: 1em;
-}
-.epsilon-recommeded-actions .custom-action p {
-    margin-top: 0;
-}
-.recomended-actions_container .epsilon-recommeded-actions-container:not(:first-child) {
-    opacity: 0;
-    height: 0;
-    overflow: hidden;
-}
-.recomended-actions_container .epsilon-recommeded-actions-container:first-child {
-    height: auto;
-    opacity: 1;
-}
-.recomended-actions_container .epsilon-recommeded-actions-container {
-    -webkit-transition: opacity 2s; /* Safari */
-    transition: opacity 2s;
-}
-.recomended-actions_container .hide {
-    display: none;
-}
-.illdy-actions-count.complete {
-    background-color: #79ba49;
-}
-.recomended-actions_container #demo_content .button {
-    display: block;
-    margin-bottom: 1em;
-    text-align: center;
-}
-.recomended-actions_container .succes a {
-    width: 100%;
-    text-align: center;
-    display: inline-block;
-}
-.recomended-actions_container .succes a.social {
-    width: 49%;
-    margin-bottom: 1em;
-    line-height: 20px;
-    padding-top: 4px;
-}
-.recomended-actions_container .succes a.social span,
-.recomended-actions_container .succes a.illdy-wordpress span {
-    margin-right: 5px;
-}
-.recomended-actions_container .succes a.illdy-wordpress {
-    line-height: 20px;
-    padding-top: 4px;
+/* Reorder
+ *
+ * WordPress wraps the section title in a full-width flex
+ * <button class="accordion-trigger">, and sets the <h3> padding to 0 when it does, so
+ * an inline-block :before on the h3 is pushed onto its own line above the title.
+ * Taking the icon out of flow and insetting the button keeps the handle vertically
+ * centred beside the name. */
+#sub-accordion-panel-illdy_frontpage_panel > li.control-section > h3 {
+    position: relative;
+    cursor: move;
 }
 
-/* Reorder */
 #sub-accordion-panel-illdy_frontpage_panel > li.control-section > h3:before {
     content: "\f545";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
     opacity: 0.5;
-    font: 400 20px/21px dashicons;
-    speak: none;
-    display: inline-block;
-    padding: 0;
+    font: 400 20px/1 dashicons;
+    speak: never;
     text-indent: 0;
     text-align: center;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-decoration: none!important;
-    vertical-align: middle;
-    margin-right: 10px;
+    text-decoration: none !important;
+    pointer-events: none;
 }
-#sub-accordion-panel-illdy_frontpage_panel > li.control-section#accordion-section-illdy_jumbotron_general > h3:before{
-    content: ""
+
+#sub-accordion-panel-illdy_frontpage_panel > li.control-section > h3 button.accordion-trigger,
+#sub-accordion-panel-illdy_frontpage_panel > li.control-section > h3.accordion-section-title {
+    padding-left: 42px;
 }
+
+/* The jumbotron always renders first and is excluded from the sortable, so it shows a
+ * padlock rather than a drag handle. */
+#sub-accordion-panel-illdy_frontpage_panel > li.control-section#accordion-section-illdy_jumbotron_general > h3 {
+    cursor: default;
+}
+
+#sub-accordion-panel-illdy_frontpage_panel > li.control-section#accordion-section-illdy_jumbotron_general > h3:before {
+    content: "\f160";
+    opacity: 0.35;
+}
+
 #sub-accordion-panel-illdy_frontpage_panel .description {
     display: block !important;
     background: transparent !important;

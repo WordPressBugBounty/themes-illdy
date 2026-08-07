@@ -6,31 +6,45 @@
 if ( ! function_exists( 'illdy_customize_register' ) ) {
 	function illdy_customize_register( $wp_customize ) {
 
-		// Get Settings
-		$wp_customize->get_setting( 'blogname' )->transport          = 'postMessage';
-		$wp_customize->get_setting( 'blogdescription' )->transport   = 'postMessage';
-		$wp_customize->get_setting( 'header_image' )->transport      = 'postMessage';
-		$wp_customize->get_setting( 'header_image_data' )->transport = 'postMessage';
+		/*
+		 * Core settings/controls can be absent when a child theme or plugin drops the
+		 * matching theme support. Assigning a property on null is a fatal error in
+		 * PHP 8, so resolve each one before touching it.
+		 */
+		foreach ( array( 'blogname', 'blogdescription', 'header_image', 'header_image_data' ) as $illdy_core_setting ) {
+			$illdy_setting = $wp_customize->get_setting( $illdy_core_setting );
+			if ( $illdy_setting ) {
+				$illdy_setting->transport = 'postMessage';
+			}
+		}
 
-		$wp_customize->get_control( 'custom_logo' )->section = 'illdy_general_section';
+		$illdy_logo_control = $wp_customize->get_control( 'custom_logo' );
+		if ( $illdy_logo_control ) {
+			$illdy_logo_control->section = 'illdy_general_section';
+		}
 
 		/**********************************************/
 		/*************** INIT ************************/
 		/**********************************************/
 
 		// Custom Controls
-		require_once get_template_directory() . '/inc/customizer/class-epsilon-control-button.php';
-		require_once get_template_directory() . '/inc/customizer/class-epsilon-control-tab.php';
+		require_once get_template_directory() . '/inc/customizer/controls/class-illdy-control-text-editor.php';
+		require_once get_template_directory() . '/inc/customizer/controls/class-illdy-control-color-scheme.php';
+		require_once get_template_directory() . '/inc/customizer/controls/class-illdy-control-repeater.php';
+		require_once get_template_directory() . '/inc/customizer/controls/class-illdy-control-button.php';
+		require_once get_template_directory() . '/inc/customizer/controls/class-illdy-control-tab.php';
+		require_once get_template_directory() . '/inc/customizer/sections/class-illdy-section-pro.php';
 		require_once get_template_directory() . '/inc/customizer/class-illdy-kaliforms-custom-control.php';
 		require_once get_template_directory() . '/inc/customizer/class-illdy-text-custom-control.php';
-		require_once get_template_directory() . '/inc/customizer/class-epsilon-editor-custom-control.php';
+		// Loaded last so the Illdy_* classes it wraps already exist.
+		require_once get_template_directory() . '/inc/customizer/class-illdy-deprecated.php';
 
-		$wp_customize->register_control_type( 'Epsilon_Control_Tab' );
-		$wp_customize->register_control_type( 'Epsilon_Control_Button' );
+		$wp_customize->register_control_type( 'Illdy_Control_Tab' );
+		$wp_customize->register_control_type( 'Illdy_Control_Button' );
 
 		// Pro Section
 		$wp_customize->add_section(
-			new Epsilon_Section_Pro(
+			new Illdy_Section_Pro(
 				$wp_customize, 'illdy-pro-section', array(
 					'title'       => esc_html__( 'Illdy', 'illdy' ),
 					'button_text' => esc_html__( 'Documentation', 'illdy' ),
@@ -58,9 +72,9 @@ if ( ! function_exists( 'illdy_customize_register' ) ) {
 			)
 		);
 		$wp_customize->add_control(
-			new Epsilon_Control_Color_Scheme(
+			new Illdy_Control_Color_Scheme(
 				$wp_customize, 'illdy_color_scheme', array(
-					'type'        => 'epsilon-color-scheme',
+					'type'        => 'illdy-color-scheme',
 					'label'       => esc_html__( 'Color scheme', 'illdy' ),
 					'description' => esc_html__( 'Select a color scheme', 'illdy' ),
 					'choices'     => array(
@@ -175,7 +189,16 @@ if ( ! function_exists( 'illdy_customize_register' ) ) {
 		require_once get_template_directory() . '/inc/customizer/panels/full-width.php';
 	}
 
-	add_action( 'customize_register', 'illdy_customize_register' );
+	/*
+	 * Priority 11, not the default 10. This originally existed to run after the Epsilon
+	 * framework's own customize_register callback, which loaded the control classes the
+	 * panels instantiate. That framework is gone and the theme now requires its controls
+	 * directly, but the priority stays: Illdy Companion registers its widgets' controls
+	 * at priority 20 and expects the theme's panels to already exist, and third-party
+	 * code hooking at the default 10 keeps running before the panels are built rather
+	 * than in the middle of them.
+	 */
+	add_action( 'customize_register', 'illdy_customize_register', 11 );
 }// End if().
 
 /**
@@ -226,6 +249,7 @@ if ( ! function_exists( 'illdy_customizer_js_load' ) ) {
 		$illdy_customizer['ajax_url']           = admin_url( 'admin-ajax.php' );
 		$illdy_customizer['template_directory'] = get_template_directory_uri();
 		$illdy_customizer['site_url']           = site_url();
+		$illdy_customizer['order_nonce']        = wp_create_nonce( 'illdy_order_sections' );
 
 		wp_localize_script( 'illdy-customizer', 'IlldyCustomizer', $illdy_customizer );
 
@@ -257,19 +281,26 @@ if ( ! function_exists( 'illdy_sanitize_radio_buttons' ) ) {
 if ( ! function_exists( 'illdy_customizer_css' ) ) {
 	add_action( 'wp_head', 'illdy_customizer_css' );
 	function illdy_customizer_css() {
-		$preloader_primary_color    = esc_attr( get_theme_mod( 'illdy_preloader_primary_color', '#f1d204' ) );
-		$preloader_secondly_color   = esc_attr( get_theme_mod( 'illdy_preloader_secondly_color', '#ffffff' ) );
-		$preloader_background_color = esc_attr( get_theme_mod( 'illdy_preloader_background_color', '#ffffff' ) );
+		/*
+		 * These land inside a CSS declaration, where esc_attr() is the wrong tool: it
+		 * permits ";" and "}", so a stored value could close the rule and append
+		 * arbitrary CSS. sanitize_hex_color() constrains them to a colour literal.
+		 */
+		$preloader_primary_color    = sanitize_hex_color( get_theme_mod( 'illdy_preloader_primary_color', '#f1d204' ) );
+		$preloader_secondly_color   = sanitize_hex_color( get_theme_mod( 'illdy_preloader_secondly_color', '#ffffff' ) );
+		$preloader_background_color = sanitize_hex_color( get_theme_mod( 'illdy_preloader_background_color', '#ffffff' ) );
 
 		$output = '';
 
-		$output .= '<style type="text/css">';
 		$output .= ( $preloader_primary_color ? '.pace .pace-progress {background-color: ' . $preloader_primary_color . '; color: ' . $preloader_primary_color . ';}' : '' );
 		$output .= ( $preloader_primary_color || $preloader_secondly_color ? '.pace .pace-activity {box-shadow: inset 0 0 0 2px ' . $preloader_primary_color . ', inset 0 0 0 7px ' . $preloader_secondly_color . ';}' : '' );
 		$output .= ( $preloader_background_color ? '.pace-overlay {background-color: ' . $preloader_background_color . ';}' : '' );
-		$output .= '</style>';
 
-		echo $output;
+		if ( '' === $output ) {
+			return;
+		}
+
+		echo '<style id="illdy-preloader-css">' . $output . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- values constrained to hex colours above.
 	}
 }
 
@@ -404,92 +435,127 @@ function illdy_is_sticky_header() {
 	return false;
 }
 
+if ( ! function_exists( 'illdy_sanitize_slides' ) ) {
+	/**
+	 * Sanitizes the jumbotron slides repeater.
+	 *
+	 * Accepts either the array the control posts or a JSON string, and always returns
+	 * the shape the front end reads: a list of arrays each holding a slide_image URL.
+	 *
+	 * @param mixed $value Raw setting value.
+	 *
+	 * @return array
+	 */
+	function illdy_sanitize_slides( $value ) {
+		if ( is_string( $value ) ) {
+			$decoded = json_decode( $value, true );
+			$value   = ( null === $decoded ) ? array() : $decoded;
+		}
+
+		$clean = array();
+
+		foreach ( (array) $value as $row ) {
+			$row = (array) $row;
+
+			if ( empty( $row['slide_image'] ) ) {
+				continue;
+			}
+
+			$clean[] = array( 'slide_image' => esc_url_raw( $row['slide_image'] ) );
+		}
+
+		return $clean;
+	}
+}
+
 /**
  *  Sanitize Select
  */
 if ( ! function_exists( 'illdy_sanitize_select' ) ) {
 	function illdy_sanitize_select( $input ) {
-		if ( is_numeric( $input ) ) {
-			return intval( $input );
-		}
+		// Previously fell through and returned null for any non-numeric input, which
+		// stored a null theme mod. Constrain to the two registered choices instead.
+		$input = is_numeric( $input ) ? intval( $input ) : 0;
+
+		return in_array( $input, array( 1, 2 ), true ) ? $input : 1;
 	}
 }
 
 if ( ! function_exists( 'illdy_about_general_title' ) ) {
 	function illdy_about_general_title() {
-		return get_theme_mode( 'illdy_about_general_title' );
+		return get_theme_mod( 'illdy_about_general_title' );
 	}
 }
 
 if ( ! function_exists( 'illdy_about_general_entry' ) ) {
 	function illdy_about_general_entry() {
-		return get_theme_mode( 'illdy_about_general_entry' );
+		return get_theme_mod( 'illdy_about_general_entry' );
 	}
 }
 
 if ( ! function_exists( 'illdy_contact_us_general_title' ) ) {
 	function illdy_contact_us_general_title() {
-		return get_theme_mode( 'illdy_contact_us_general_title' );
+		return get_theme_mod( 'illdy_contact_us_general_title' );
 	}
 }
 
 if ( ! function_exists( 'illdy_contact_us_general_text' ) ) {
 	function illdy_contact_us_general_text() {
-		return get_theme_mode( 'illdy_contact_us_general_text' );
+		return get_theme_mod( 'illdy_contact_us_general_text' );
 	}
 }
 
 if ( ! function_exists( 'illdy_contact_us_general_address_title' ) ) {
 	function illdy_contact_us_general_address_title() {
-		return get_theme_mode( 'illdy_contact_us_general_address_title' );
+		return get_theme_mod( 'illdy_contact_us_general_address_title' );
 	}
 }
 
 if ( ! function_exists( 'illdy_contact_us_general_customer_support_title' ) ) {
 	function illdy_contact_us_general_customer_support_title() {
-		return get_theme_mode( 'illdy_contact_us_general_customer_support_title' );
+		return get_theme_mod( 'illdy_contact_us_general_customer_support_title' );
 	}
 }
 
 if ( ! function_exists( 'illdy_address2' ) ) {
 	function illdy_address2() {
-		return get_theme_mode( 'illdy_address2' );
+		return get_theme_mod( 'illdy_address2' );
 	}
 }
 
 if ( ! function_exists( 'illdy_address1' ) ) {
 	function illdy_address1() {
-		return get_theme_mode( 'illdy_address1' );
+		return get_theme_mod( 'illdy_address1' );
 	}
 }
 
 if ( ! function_exists( 'illdy_phone' ) ) {
 	function illdy_phone() {
-		return get_theme_mode( 'illdy_phone' );
+		return get_theme_mod( 'illdy_phone' );
 	}
 }
 
 if ( ! function_exists( 'illdy_email' ) ) {
 	function illdy_email() {
-		return get_theme_mode( 'illdy_email' );
+		return get_theme_mod( 'illdy_email' );
 	}
 }
 
 if ( ! function_exists( 'illdy_footer_copyright' ) ) {
 	function illdy_footer_copyright() {
-		return get_theme_mode( 'illdy_footer_copyright' );
+		return get_theme_mod( 'illdy_footer_copyright' );
 	}
 }
 
 if ( ! function_exists( 'illdy_jumbotron_general_first_row_from_title' ) ) {
 	function illdy_jumbotron_general_first_row_from_title() {
-		return get_theme_mode( 'illdy_jumbotron_general_first_row_from_title' );
+		return get_theme_mod( 'illdy_jumbotron_general_first_row_from_title' );
 	}
 }
 
 if ( ! function_exists( 'illdy_jumbotron_general_second_row_from_title' ) ) {
 	function illdy_jumbotron_general_second_row_from_title() {
-		return get_theme_mode( 'illdy_jumbotron_general_second_row_from_title' );
+		return get_theme_mod( 'illdy_jumbotron_general_second_row_from_title' );
 	}
 }
 
@@ -510,9 +576,15 @@ if ( ! function_exists( 'illdy_img_footer_logo' ) ) {
 if ( ! function_exists( 'illdy_custom_logo' ) ) {
 	function illdy_custom_logo() {
 		$logo_id    = get_theme_mod( 'custom_logo' );
-		$logo_image = wp_get_attachment_image_src( $logo_id, 'full' );
+		$logo_image = $logo_id ? wp_get_attachment_image_src( $logo_id, 'full' ) : false;
 
-		return '<img src="' . esc_url( $logo_image[0] ) . '" />';
+		// wp_get_attachment_image_src() returns false when the attachment is gone;
+		// indexing that produced a PHP notice and an <img src="">.
+		if ( empty( $logo_image[0] ) ) {
+			return '';
+		}
+
+		return '<img src="' . esc_url( $logo_image[0] ) . '" alt="' . esc_attr( get_bloginfo( 'name' ) ) . '" />';
 	}
 }
 if ( ! function_exists( 'illdy_contact_us_social' ) ) {
@@ -559,21 +631,64 @@ if ( ! function_exists( 'illdy_contact_us_social' ) ) {
 
 add_action( 'wp_ajax_illdy_order_sections', 'illdy_order_sections' );
 
+/**
+ * Persists the front-page section order.
+ *
+ * Reordering rewrites a theme mod, so it requires the same authority the Customizer
+ * itself does. This endpoint previously ran for any authenticated user, verified no
+ * nonce, and wrote raw $_POST data into the option.
+ */
 function illdy_order_sections() {
 
-	if ( isset( $_POST['sections'] ) ) {
-
-		set_theme_mod( 'illdy_frontpage_sections', $_POST['sections'] );
-		echo 'succes';
-
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		wp_send_json_error( 'forbidden', 403 );
 	}
 
-	wp_die(); // this is required to terminate immediately and return a proper response
+	check_ajax_referer( 'illdy_order_sections', 'nonce' );
+
+	$submitted = isset( $_POST['sections'] ) ? wp_unslash( $_POST['sections'] ) : array();
+
+	if ( ! is_array( $submitted ) ) {
+		wp_send_json_error( 'invalid', 400 );
+	}
+
+	$allowed = illdy_get_default_sections();
+	$clean   = array();
+
+	foreach ( $submitted as $section ) {
+		if ( ! is_string( $section ) ) {
+			continue;
+		}
+
+		$section = sanitize_text_field( $section );
+
+		if ( in_array( $section, $allowed, true ) && ! in_array( $section, $clean, true ) ) {
+			$clean[] = $section;
+		}
+	}
+
+	// A short or partial payload must never drop sections off the front page.
+	foreach ( $allowed as $section ) {
+		if ( ! in_array( $section, $clean, true ) ) {
+			$clean[] = $section;
+		}
+	}
+
+	set_theme_mod( 'illdy_frontpage_sections', $clean );
+
+	wp_send_json_success();
 }
 
-if ( ! function_exists( 'illdy_get_sections_position' ) ) {
-	function illdy_get_sections_position() {
-		$defaults = array(
+if ( ! function_exists( 'illdy_get_default_sections' ) ) {
+	/**
+	 * The canonical set of front-page section ids, in their shipped order.
+	 *
+	 * Doubles as the allowlist for anything that writes the stored order.
+	 *
+	 * @return string[]
+	 */
+	function illdy_get_default_sections() {
+		return array(
 			'illdy_panel_about',
 			'illdy_panel_projects',
 			'illdy_testimonials_general',
@@ -584,8 +699,34 @@ if ( ! function_exists( 'illdy_get_sections_position' ) ) {
 			'illdy_contact_us',
 			'illdy_full_width',
 		);
+	}
+}
+
+if ( ! function_exists( 'illdy_get_sections_position' ) ) {
+	function illdy_get_sections_position() {
+		$defaults = illdy_get_default_sections();
 		$sections = get_theme_mod( 'illdy_frontpage_sections', $defaults );
-		return $sections;
+
+		if ( ! is_array( $sections ) ) {
+			return $defaults;
+		}
+
+		// Reconcile against the allowlist so a stale or tampered value cannot drop,
+		// duplicate or invent a section.
+		$clean = array();
+		foreach ( $sections as $section ) {
+			if ( is_string( $section ) && in_array( $section, $defaults, true ) && ! in_array( $section, $clean, true ) ) {
+				$clean[] = $section;
+			}
+		}
+
+		foreach ( $defaults as $section ) {
+			if ( ! in_array( $section, $clean, true ) ) {
+				$clean[] = $section;
+			}
+		}
+
+		return $clean;
 	}
 }
 

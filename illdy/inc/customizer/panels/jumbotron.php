@@ -25,14 +25,12 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_jumbotron_enable_parallax_effect', array(
-			'type'        => 'epsilon-toggle',
+	$prefix . '_jumbotron_enable_parallax_effect', array(
+			'type'        => 'checkbox',
 			'label'       => __( 'Enable parallax effect ?', 'illdy' ),
 			'description' => __( 'Enabling this will add a parallax scrolling effect for the header image.', 'illdy' ),
 			'section'     => $prefix . '_jumbotron_general',
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -43,11 +41,11 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Text_Editor(
+	new Illdy_Control_Text_Editor(
 		$wp_customize, $prefix . '_jumbotron_title', array(
 			'label'   => __( 'Title', 'illdy' ),
 			'section' => $prefix . '_jumbotron_general',
-			'type'    => 'epsilon-text-editor',
+			'type'    => 'illdy-text-editor',
 		)
 	)
 );
@@ -69,11 +67,11 @@ if ( get_theme_mod( $prefix . '_jumbotron_general_entry' ) ) {
 		)
 	);
 	$wp_customize->add_control(
-		new Epsilon_Control_Text_Editor(
+		new Illdy_Control_Text_Editor(
 			$wp_customize, $prefix . '_jumbotron_general_entry', array(
 				'label'   => __( 'Entry', 'illdy' ),
 				'section' => $prefix . '_jumbotron_general',
-				'type'    => 'epsilon-text-editor',
+				'type'    => 'illdy-text-editor',
 			)
 		)
 	);
@@ -168,9 +166,9 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Tab(
+	new Illdy_Control_Tab(
 		$wp_customize, $prefix . '_jumbotron_tab', array(
-			'type'    => 'epsilon-tab',
+			'type'    => 'illdy-tab',
 			'section' => $prefix . '_jumbotron_general',
 			'buttons' => array(
 				array(
@@ -306,14 +304,12 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_jumbotron_background_repeat', array(
-			'type'            => 'epsilon-toggle',
+	$prefix . '_jumbotron_background_repeat', array(
+			'type'            => 'checkbox',
 			'label'           => __( 'Repeat Background Image', 'illdy' ),
 			'section'         => $prefix . '_jumbotron_general',
 			'active_callback' => 'illdy_is_jumbotron_image',
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -325,14 +321,12 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_jumbotron_background_attachment', array(
-			'type'            => 'epsilon-toggle',
+	$prefix . '_jumbotron_background_attachment', array(
+			'type'            => 'checkbox',
 			'label'           => __( 'Scroll with Page', 'illdy' ),
 			'section'         => $prefix . '_jumbotron_general',
 			'active_callback' => 'illdy_is_jumbotron_image',
 		)
-	)
 );
 
 // Controls for background video
@@ -377,25 +371,28 @@ $wp_customize->add_control(
 );
 
 // Controls for slider
-Epsilon_Customizer::add_field(
+$wp_customize->add_setting(
 	$prefix . '_jumbotron_slides', array(
-		'type'            => 'epsilon-repeater',
-		'section'         => $prefix . '_jumbotron_general',
-		'label'           => esc_html__( 'Slides', 'illdy' ),
-		'button_label'    => esc_html__( 'Add new entries', 'illdy' ),
-		'row_label'       => array(
-			'type'  => 'text',
-			'value' => esc_html__( 'Slide', 'illdy' ),
-		),
-		'fields'          => array(
-			'slide_image' => array(
-				'label'   => esc_html__( 'Slide Image', 'illdy' ),
-				'type'    => 'epsilon-image',
-				'size'    => 'full',
-				'default' => '',
+		'default'           => array(),
+		'sanitize_callback' => 'illdy_sanitize_slides',
+		'transport'         => 'refresh',
+	)
+);
+$wp_customize->add_control(
+	new Illdy_Control_Repeater(
+		$wp_customize, $prefix . '_jumbotron_slides', array(
+			'section'         => $prefix . '_jumbotron_general',
+			'label'           => esc_html__( 'Slides', 'illdy' ),
+			'button_label'    => esc_html__( 'Add new entries', 'illdy' ),
+			'row_label'       => esc_html__( 'Slide', 'illdy' ),
+			'fields'          => array(
+				'slide_image' => array(
+					'label' => esc_html__( 'Slide Image', 'illdy' ),
+					'type'  => 'image',
+				),
 			),
-		),
-		'active_callback' => 'illdy_is_jumbotron_slider',
+			'active_callback' => 'illdy_is_jumbotron_slider',
+		)
 	)
 );
 
@@ -407,14 +404,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_jumbotron_slider_autoplay', array(
-			'type'            => 'epsilon-toggle',
+	$prefix . '_jumbotron_slider_autoplay', array(
+			'type'            => 'checkbox',
 			'label'           => __( 'Slider Autoplay ?', 'illdy' ),
 			'section'         => $prefix . '_jumbotron_general',
 			'active_callback' => 'illdy_is_jumbotron_slider',
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -441,14 +436,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_jumbotron_slider_nav', array(
-			'type'            => 'epsilon-toggle',
+	$prefix . '_jumbotron_slider_nav', array(
+			'type'            => 'checkbox',
 			'label'           => __( 'Slider Navigation ?', 'illdy' ),
 			'section'         => $prefix . '_jumbotron_general',
 			'active_callback' => 'illdy_is_jumbotron_slider',
 		)
-	)
 );
 
 

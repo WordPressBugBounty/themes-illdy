@@ -31,14 +31,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_about_general_show', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_about_general_show', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Show this section?', 'illdy' ),
 			'section'  => $panel_id,
 			'priority' => 1,
 		)
-	)
 );
 
 // Title
@@ -76,12 +74,12 @@ if ( get_theme_mod( $prefix . '_about_general_entry' ) ) {
 		)
 	);
 	$wp_customize->add_control(
-		new Epsilon_Control_Text_Editor(
+		new Illdy_Control_Text_Editor(
 			$wp_customize, $prefix . '_about_general_entry', array(
 				'label'    => __( 'Entry', 'illdy' ),
 				'section'  => $panel_id,
 				'priority' => 3,
-				'type'     => 'epsilon-text-editor',
+				'type'     => 'illdy-text-editor',
 			)
 		)
 	);
@@ -99,6 +97,7 @@ if ( get_theme_mod( $prefix . '_about_general_entry' ) ) {
 		new Illdy_Text_Custom_Control(
 			$wp_customize, $prefix . '_about_general_text', array(
 				'label'       => __( 'Install Illdy Companion', 'illdy' ),
+				/* translators: %s: URL of the Recommended Plugins tab where Illdy Companion can be installed. */
 				'description' => sprintf( __( 'In order to edit description please install <a href="%s" target="_blank">Illdy Companion</a>', 'illdy' ), illdy_get_recommended_actions_url() ),
 				'section'     => $panel_id,
 				'settings'    => $prefix . '_about_general_text',
@@ -122,7 +121,7 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Button(
+	new Illdy_Control_Button(
 		$wp_customize, $prefix . '_about_widget_button', array(
 			'text'       => __( 'Add & Edit skill bars', 'illdy' ),
 			'section_id' => 'sidebar-widgets-front-page-about-sidebar',
@@ -140,9 +139,9 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Tab(
+	new Illdy_Control_Tab(
 		$wp_customize, $prefix . '_about_tab', array(
-			'type'    => 'epsilon-tab',
+			'type'    => 'illdy-tab',
 			'section' => $panel_id,
 			'buttons' => array(
 				array(
@@ -241,13 +240,11 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_about_background_repeat', array(
-			'type'    => 'epsilon-toggle',
+	$prefix . '_about_background_repeat', array(
+			'type'    => 'checkbox',
 			'label'   => __( 'Repeat Background Image', 'illdy' ),
 			'section' => $panel_id,
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -259,13 +256,11 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_about_background_attachment', array(
-			'type'    => 'epsilon-toggle',
+	$prefix . '_about_background_attachment', array(
+			'type'    => 'checkbox',
 			'label'   => __( 'Scroll with Page', 'illdy' ),
 			'section' => $panel_id,
 		)
-	)
 );
 
 $wp_customize->add_setting(

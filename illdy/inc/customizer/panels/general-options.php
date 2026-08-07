@@ -55,14 +55,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_sticky_header_enable', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_sticky_header_enable', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Enable the sticky header?', 'illdy' ),
 			'section'  => $prefix . '_header_section',
 			'priority' => 1,
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -94,14 +92,12 @@ $wp_customize->add_setting(
 );
 
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_jumbotron_enable_featured_image', array(
-			'type'        => 'epsilon-toggle',
+	$prefix . '_jumbotron_enable_featured_image', array(
+			'type'        => 'checkbox',
 			'label'       => __( 'Enable featured image as header image', 'illdy' ),
 			'description' => __( 'This will remove the featured image from inside the post content and use it in the jumbotron as a background image. Works for single posts & pages.', 'illdy' ),
 			'section'     => $prefix . '_header_section',
 		)
-	)
 );
 
 /***********************************************/
@@ -124,14 +120,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_preloader_enable', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_preloader_enable', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Enable the site preloader?', 'illdy' ),
 			'section'  => $prefix . '_preloader_section',
 			'priority' => 1,
 		)
-	)
 );
 
 // Background Color
@@ -317,9 +311,9 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Text_Editor(
+	new Illdy_Control_Text_Editor(
 		$wp_customize, $prefix . '_404_content', array(
-			'type'     => 'epsilon-text-editor',
+			'type'     => 'illdy-text-editor',
 			'label'    => __( '404 Page Entry', 'illdy' ),
 			'section'  => $prefix . '_404',
 			'priority' => 3,
@@ -398,14 +392,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_go_to_top', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_go_to_top', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Enable go to top icon ?', 'illdy' ),
 			'section'  => $prefix . '_general_footer_section',
 			'priority' => 3,
 		)
-	)
 );
 
 $wp_customize->add_setting(
@@ -415,14 +407,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_show_footer', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_show_footer', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Show footer widget area?', 'illdy' ),
 			'section'  => $prefix . '_general_footer_section',
 			'priority' => 4,
 		)
-	)
 );
 
 $wp_customize->selective_refresh->add_partial(
@@ -437,14 +427,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_show_footer_copyright', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_show_footer_copyright', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Show footer copyright area?', 'illdy' ),
 			'section'  => $prefix . '_general_footer_section',
 			'priority' => 4,
 		)
-	)
 );
 
 $wp_customize->selective_refresh->add_partial(

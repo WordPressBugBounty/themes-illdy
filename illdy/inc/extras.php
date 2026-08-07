@@ -45,6 +45,7 @@ if ( ! function_exists( 'illdy_comment' ) ) {
 					</div><!--/.col-sm-2-->
 					<div class="col-sm-10">
 						<?php printf( '%s', get_comment_author_link() ); ?>
+						<?php /* translators: 1: comment date, 2: comment time. */ ?>
 						<time class="comment-time" datetime="<?php printf( '%s-%s-%s', get_the_date( 'Y' ), get_the_date( 'm' ), get_the_date( 'd' ) ); ?>"><?php printf( __( '%1$s at %2$s', 'illdy' ), get_comment_date(), get_comment_time() ); ?></time>
 						<div class="comment-entry markup-format">
 							<?php comment_text(); ?>
@@ -146,7 +147,18 @@ if ( ! function_exists( 'illdy_sections' ) ) {
 
 		$sections = illdy_get_sections_position();
 
+		if ( ! is_array( $sections ) ) {
+			$sections = array_keys( $templates );
+		}
+
 		foreach ( $sections as $s_id ) {
+			// The stored order can hold stale or unrecognised ids. Skipping anything we
+			// cannot map avoids an "Undefined array key" warning on PHP 8 and keeps a
+			// tampered theme mod from influencing which template part is loaded.
+			if ( ! is_string( $s_id ) || ! isset( $templates[ $s_id ] ) ) {
+				continue;
+			}
+
 			if ( illdy_sections_order( $s_id ) ) {
 				get_template_part( 'sections/front-page', $templates[ $s_id ] );
 			}
@@ -156,9 +168,32 @@ if ( ! function_exists( 'illdy_sections' ) ) {
 }
 
 function illdy_hex2rgb( $hex_color, $opacity = 1 ) {
-	$shorthand = ( strlen( $hex_color ) == 4 );
+	// Cast rather than trim: get_theme_mod() yields false for an unset colour, and
+	// strlen( false ) is deprecated in PHP 8.1+. Trimming here would change how
+	// whitespace-padded values (possible in imported databases) resolve.
+	$hex_color = is_string( $hex_color ) ? $hex_color : '';
+	$shorthand = ( 4 === strlen( $hex_color ) );
 
-	list( $r, $g, $b ) = $shorthand ? sscanf( $hex_color, '#%1s%1s%1s' ) : sscanf( $hex_color, '#%2s%2s%2s' );
+	$parsed = $shorthand
+		? sscanf( $hex_color, '#%1s%1s%1s' )
+		: sscanf( $hex_color, '#%2s%2s%2s' );
+
+	/*
+	 * sscanf() returns null for every component it could not read (and an int when the
+	 * subject is empty). Those nulls used to reach hexdec() directly, which PHP 8.1+
+	 * reports as a deprecation. Substituting '0' here silences that while producing the
+	 * exact same rgba() string the theme has always emitted for an unset colour.
+	 */
+	$parts = array( '0', '0', '0' );
+	if ( is_array( $parsed ) ) {
+		foreach ( array( 0, 1, 2 ) as $i ) {
+			if ( isset( $parsed[ $i ] ) && '' !== $parsed[ $i ] ) {
+				$parts[ $i ] = $parsed[ $i ];
+			}
+		}
+	}
+
+	list( $r, $g, $b ) = $parts;
 
 	return 'rgba( ' . hexdec( $shorthand ? "$r$r" : $r ) . ', ' . hexdec( $shorthand ? "$g$g" : $g ) . ', ' . hexdec( $shorthand ? "$b$b" : $b ) . ', ' . $opacity . ' )';
 }
@@ -613,7 +648,7 @@ if ( ! function_exists( 'illdy_testimonials_css' ) ) {
 			$css .= '#testimonials .section-content .testimonials-carousel .carousel-testimonial .testimonial-content:after {border-color: ' . esc_attr( $illdy_testimonials_container_background_color ) . ' transparent transparent transparent;}';
 		}
 		if ( $illdy_testimonials_dots_color ) {
-			$css .= '#testimonials .section-content .testimonials-carousel .owl-controls .owl-dots .owl-dot:hover, #testimonials .section-content .testimonials-carousel .owl-controls .owl-dots .owl-dot:focus, #testimonials .section-content .testimonials-carousel .owl-controls .owl-dots .owl-dot.active {border-color: ' . $illdy_testimonials_dots_color . ';}';
+			$css .= '#testimonials .section-content .testimonials-carousel .owl-controls .owl-dots .owl-dot:hover, #testimonials .section-content .testimonials-carousel .owl-controls .owl-dots .owl-dot:focus, #testimonials .section-content .testimonials-carousel .owl-controls .owl-dots .owl-dot.active {border-color: ' . esc_attr( $illdy_testimonials_dots_color ) . ';}';
 			$css .= '#testimonials .section-content .testimonials-carousel .owl-controls .owl-dots .owl-dot {background-color: ' . esc_attr( $illdy_testimonials_dots_color ) . ';}';
 		}
 
@@ -624,18 +659,36 @@ if ( ! function_exists( 'illdy_testimonials_css' ) ) {
 if ( ! function_exists( 'illdy_output_sections_css' ) ) {
 
 	function illdy_output_sections_css() {
-	?>
 
-		<style type="text/css" id="illdy-about-section-css"><?php echo illdy_jumbotron_css(); ?></style>
-		<style type="text/css" id="illdy-latestnews-section-css"><?php echo illdy_latestnews_css(); ?></style>
-		<style type="text/css" id="illdy-fullwidth-section-css"><?php echo illdy_fullwidth_css(); ?></style>
-		<style type="text/css" id="illdy-about-section-css"><?php echo illdy_about_css(); ?></style>
-		<style type="text/css" id="illdy-projects-section-css"><?php echo illdy_projects_css(); ?></style>
-		<style type="text/css" id="illdy-services-section-css"><?php echo illdy_services_css(); ?></style>
-		<style type="text/css" id="illdy-team-section-css"><?php echo illdy_team_css(); ?></style>
-		<style type="text/css" id="illdy-testimonials-section-css"><?php echo illdy_testimonials_css(); ?></style>
+		$sections = array(
+			'jumbotron'    => 'illdy_jumbotron_css',
+			'latestnews'   => 'illdy_latestnews_css',
+			'fullwidth'    => 'illdy_fullwidth_css',
+			'about'        => 'illdy_about_css',
+			'projects'     => 'illdy_projects_css',
+			'services'     => 'illdy_services_css',
+			'team'         => 'illdy_team_css',
+			'testimonials' => 'illdy_testimonials_css',
+		);
 
-	<?php
+		/*
+		 * The id must stay "illdy-<section>-section-css": the Customizer previewer
+		 * resolves these elements by that exact pattern. Inside the preview every
+		 * element is emitted even when empty so the previewer always finds its target;
+		 * on the front end the empty ones are skipped.
+		 */
+		$keep_empty = is_customize_preview();
+
+		foreach ( $sections as $slug => $callback ) {
+			$css = $callback();
+
+			if ( '' === $css && ! $keep_empty ) {
+				continue;
+			}
+
+			// Values are escaped where each rule is assembled above.
+			echo '<style id="illdy-' . esc_attr( $slug ) . '-section-css">' . $css . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
 	}
 
 	add_action( 'wp_head', 'illdy_output_sections_css', 99 );

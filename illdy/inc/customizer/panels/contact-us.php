@@ -22,9 +22,9 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Tab(
+	new Illdy_Control_Tab(
 		$wp_customize, $prefix . '_contact_tab', array(
-			'type'     => 'epsilon-tab',
+			'type'     => 'illdy-tab',
 			'section'  => $prefix . '_contact_us',
 			'priority' => 1,
 			'buttons'  => array(
@@ -65,14 +65,12 @@ $wp_customize->add_setting(
 	)
 );
 $wp_customize->add_control(
-	new Epsilon_Control_Toggle(
-		$wp_customize, $prefix . '_contact_us_show', array(
-			'type'     => 'epsilon-toggle',
+	$prefix . '_contact_us_show', array(
+			'type'     => 'checkbox',
 			'label'    => __( 'Show this section?', 'illdy' ),
 			'section'  => $prefix . '_contact_us',
 			'priority' => 1,
 		)
-	)
 );
 
 // Title
@@ -108,12 +106,12 @@ if ( get_theme_mod( $prefix . '_contact_us_entry' ) ) {
 		)
 	);
 	$wp_customize->add_control(
-		new Epsilon_Control_Text_Editor(
+		new Illdy_Control_Text_Editor(
 			$wp_customize, $prefix . '_contact_us_entry', array(
 				'label'    => __( 'Entry', 'illdy' ),
 				'section'  => $prefix . '_contact_us',
 				'priority' => 3,
-				'type'     => 'epsilon-text-editor',
+				'type'     => 'illdy-text-editor',
 			)
 		)
 	);
@@ -131,6 +129,7 @@ if ( get_theme_mod( $prefix . '_contact_us_entry' ) ) {
 		new Illdy_Text_Custom_Control(
 			$wp_customize, $prefix . '_contact_us_entry', array(
 				'label'       => __( 'Install Illdy Companion', 'illdy' ),
+				/* translators: %s: URL of the Recommended Plugins tab where Illdy Companion can be installed. */
 				'description' => sprintf( __( 'In order to edit description please install <a href="%s" target="_blank">Illdy Companion</a>', 'illdy' ), illdy_get_recommended_actions_url() ),
 				'section'     => $prefix . '_contact_us',
 				'settings'    => $prefix . '_contact_us_entry',
