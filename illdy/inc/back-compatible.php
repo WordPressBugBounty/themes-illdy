@@ -1,187 +1,172 @@
 <?php
+/**
+ * One-time upgrade steps for settings saved by old versions of Illdy.
+ *
+ * These used to run on every request, front end included: a dozen theme mod reads,
+ * a full get_custom_logo() render, and, until Illdy Companion had migrated them, a
+ * query for every Jetpack testimonial. They now run once per theme version and per
+ * active theme (a child theme keeps its own theme mods), recorded in the
+ * illdy_migrated_version option. Each step is idempotent, so running them again
+ * after an update is harmless.
+ *
+ * @package WordPress
+ * @subpackage illdy
+ */
 
-$theme = wp_get_theme();
-if ( version_compare( $theme->version, '1.0.17', '>' ) ) {
+if ( ! function_exists( 'illdy_migrate_legacy_settings' ) ) {
+	/**
+	 * Moves settings saved by Illdy 1.x to where current versions read them.
+	 */
+	function illdy_migrate_legacy_settings() {
+		// The image logo became core's custom logo.
+		$current_logo = get_theme_mod( 'illdy_img_logo', '' );
+		if ( '' !== $current_logo && ! get_theme_mod( 'custom_logo' ) ) {
+			$logo_id = attachment_url_to_postid( $current_logo );
+			if ( $logo_id ) {
+				set_theme_mod( 'custom_logo', $logo_id );
+				remove_theme_mod( 'illdy_img_logo' );
+			}
+		}
 
-	$current_logo = get_theme_mod( 'illdy_img_logo', '' );
-	$logo         = get_custom_logo();
-	if ( '' != $current_logo && ! $logo ) {
-		$logo_id = attachment_url_to_postid( $current_logo );
-		if ( $logo_id ) {
-			set_theme_mod( 'custom_logo', $logo_id );
-			remove_theme_mod( 'illdy_img_logo' );
+		// Section order: eight numbered settings became one ordered list.
+		$defaults = illdy_get_default_sections();
+		$old_keys = array( 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth' );
+		$new      = array();
+
+		foreach ( $old_keys as $key ) {
+			$position = (int) get_theme_mod( 'illdy_general_sections_order_' . $key . '_section' );
+			$index    = $position - 1;
+
+			if ( $position > 0 && isset( $defaults[ $index ] ) ) {
+				$new[ $index ] = $defaults[ $index ];
+				unset( $defaults[ $index ] );
+			}
+		}
+
+		if ( ! empty( $new ) ) {
+			set_theme_mod( 'illdy_frontpage_sections', array_values( array_merge( $new, $defaults ) ) );
+
+			foreach ( $old_keys as $key ) {
+				remove_theme_mod( 'illdy_general_sections_order_' . $key . '_section' );
+			}
+		}
+
+		// The jumbotron title used to be three words.
+		$words = array_filter(
+			array(
+				get_theme_mod( 'illdy_jumbotron_general_first_row_from_title' ),
+				get_theme_mod( 'illdy_jumbotron_general_second_row_from_title' ),
+				get_theme_mod( 'illdy_jumbotron_general_third_row_from_title' ),
+			)
+		);
+
+		if ( $words ) {
+			set_theme_mod( 'illdy_jumbotron_title', implode( '<span class="span-dot">.</span>', $words ) );
+			remove_theme_mod( 'illdy_jumbotron_general_first_row_from_title' );
+			remove_theme_mod( 'illdy_jumbotron_general_second_row_from_title' );
+			remove_theme_mod( 'illdy_jumbotron_general_third_row_from_title' );
+		}
+
+		// Contact section titles were renamed.
+		$renamed = array(
+			'illdy_contact_us_title'                  => 'illdy_contact_us_general_title',
+			'illdy_contact_us_address_title'          => 'illdy_contact_us_general_address_title',
+			'illdy_contact_us_customer_support_title' => 'illdy_contact_us_general_customer_support_title',
+		);
+
+		foreach ( $renamed as $old => $current ) {
+			$value = get_theme_mod( $old );
+			if ( $value ) {
+				set_theme_mod( $current, $value );
+				remove_theme_mod( $old );
+			}
+		}
+
+		// The colour scheme control once stored its label instead of its id.
+		if ( 'Illdy' === get_theme_mod( 'illdy_color_scheme' ) ) {
+			remove_theme_mod( 'illdy_color_scheme' );
 		}
 	}
 }
 
-// Backward compatibility for sections ordering
-if ( version_compare( $theme->version, '1.0.36', '>=' ) ) {
-
-	$defaults = array(
-		'illdy_panel_about',
-		'illdy_panel_projects',
-		'illdy_testimonials_general',
-		'illdy_panel_services',
-		'illdy_latest_news_general',
-		'illdy_counter_general',
-		'illdy_panel_team',
-		'illdy_contact_us',
-		'illdy_full_width',
-	);
-
-	$old_order = array();
-	$new_order = array();
-
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_first_section' );
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_second_section' );
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_third_section' );
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_fourth_section' );
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_fifth_section' );
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_sixth_section' );
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_seventh_section' );
-	$old_order[] = get_theme_mod( 'illdy_general_sections_order_eighth_section' );
-
-	foreach ( $old_order as $key ) {
-		if ( $key ) {
-			$index               = $key - 1;
-			$new_order[ $index ] = $defaults[ $index ];
-			unset( $defaults[ $index ] );
+if ( ! function_exists( 'illdy_migrate_jetpack_testimonials' ) ) {
+	/**
+	 * Copies Jetpack testimonials into Illdy Companion testimonial widgets.
+	 *
+	 * Needs the Companion's widget, so it waits until that is active rather than
+	 * running with the other steps. It used to wait by re-running its query on
+	 * every request for ever on sites that had no Jetpack testimonials to move;
+	 * it now records that it ran either way.
+	 */
+	function illdy_migrate_jetpack_testimonials() {
+		if ( get_theme_mod( 'illdy_testimonials_update' ) || ! class_exists( 'Illdy_Widget_Testimonial' ) ) {
+			return;
 		}
-	}
 
-	if ( ! empty( $new_order ) ) {
-		$new_order = array_merge( $new_order, $defaults );
-		set_theme_mod( 'illdy_frontpage_sections', $new_order );
-
-		remove_theme_mod( 'illdy_general_sections_order_first_section' );
-		remove_theme_mod( 'illdy_general_sections_order_second_section' );
-		remove_theme_mod( 'illdy_general_sections_order_third_section' );
-		remove_theme_mod( 'illdy_general_sections_order_fourth_section' );
-		remove_theme_mod( 'illdy_general_sections_order_fifth_section' );
-		remove_theme_mod( 'illdy_general_sections_order_sixth_section' );
-		remove_theme_mod( 'illdy_general_sections_order_seventh_section' );
-		remove_theme_mod( 'illdy_general_sections_order_eighth_section' );
-
-	}
-
-	// Backward compatibility for testimonials section
-	$illdy_testimonials_update = get_theme_mod( 'illdy_testimonials_update' );
-	if ( class_exists( 'Illdy_Widget_Testimonial' ) && ! $illdy_testimonials_update ) {
-
-		$jetpack_testimonial_query_args = array(
-			'post_type'      => array( 'jetpack-testimonial' ),
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
+		$testimonials = get_posts(
+			array(
+				'post_type'      => 'jetpack-testimonial',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+			)
 		);
 
-		$jetpack_testimonial_query = new WP_Query( $jetpack_testimonial_query_args );
-
-		if ( $jetpack_testimonial_query->have_posts() ) {
+		if ( $testimonials ) {
 			$sidebars_widgets = get_option( 'sidebars_widgets' );
 			$widgets          = get_option( 'widget_illdy_testimonial' );
 
-			// array_slice() throws a TypeError on PHP 8 if the option holds anything
-			// other than an array, which a partial or third-party write can leave behind.
-			if ( ! empty( $widgets ) && is_array( $widgets ) ) {
-				$aux_widgets = $widgets;
-				if ( isset( $aux_widgets['_multiwidget'] ) ) {
-					unset( $aux_widgets['_multiwidget'] );
-				}
-				$last_key = $aux_widgets ? key( array_slice( $aux_widgets, -1, 1, true ) ) : 1;
-			} else {
-				$widgets  = array();
-				$last_key = 1;
+			if ( ! is_array( $widgets ) ) {
+				$widgets = array();
 			}
 
 			if ( ! is_array( $sidebars_widgets ) ) {
 				$sidebars_widgets = array();
 			}
-			$key = intval( $last_key ) + 1;
 
-			if ( ! isset( $sidebars_widgets['front-page-testimonials-sidebar'] ) ) {
+			$numbers = array_filter( array_keys( $widgets ), 'is_int' );
+			$key     = $numbers ? max( $numbers ) + 1 : 2;
+
+			if ( ! isset( $sidebars_widgets['front-page-testimonials-sidebar'] ) || ! is_array( $sidebars_widgets['front-page-testimonials-sidebar'] ) ) {
 				$sidebars_widgets['front-page-testimonials-sidebar'] = array();
 			}
 
-			foreach ( $jetpack_testimonial_query->posts as $index => $post ) {
-
-				$url             = get_the_post_thumbnail_url( $post->ID, 'illdy-front-page-testimonials' );
-				$name            = $post->post_title;
-				$testimonial     = $post->post_content;
+			foreach ( $testimonials as $testimonial ) {
 				$widgets[ $key ] = array(
-					'name'        => $name,
-					'image'       => $url,
-					'testimonial' => $testimonial,
+					'name'        => $testimonial->post_title,
+					'image'       => get_the_post_thumbnail_url( $testimonial->ID, 'illdy-front-page-testimonials' ),
+					'testimonial' => $testimonial->post_content,
 				);
-				array_push( $sidebars_widgets['front-page-testimonials-sidebar'], 'illdy_testimonial-' . $key );
 
-				$key = $key + 1;
+				$sidebars_widgets['front-page-testimonials-sidebar'][] = 'illdy_testimonial-' . $key;
+				++$key;
 			}
 
 			update_option( 'widget_illdy_testimonial', $widgets );
 			update_option( 'sidebars_widgets', $sidebars_widgets );
-			set_theme_mod( 'illdy_testimonials_update', true );
-
-		}// End if().
-	}// End if().
-
-
-	// Jumbotron Title
-	$first_word  = get_theme_mod( 'illdy_jumbotron_general_first_row_from_title' );
-	$second_word = get_theme_mod( 'illdy_jumbotron_general_second_row_from_title' );
-	$third_word  = get_theme_mod( 'illdy_jumbotron_general_third_row_from_title' );
-
-	if ( $first_word || $second_word || $third_word ) {
-
-		$title = '';
-		if ( $first_word ) {
-			$title = $first_word;
-		}
-		if ( $second_word ) {
-			if ( '' != $title ) {
-				$title .= '<span class="span-dot">.</span>';
-			}
-			$title .= $second_word;
-		}
-		if ( $third_word ) {
-			if ( '' != $title ) {
-				$title .= '<span class="span-dot">.</span>';
-			}
-			$title .= $third_word;
 		}
 
-
-		set_theme_mod( 'illdy_jumbotron_title', $title );
-		remove_theme_mod( 'illdy_jumbotron_general_first_row_from_title' );
-		remove_theme_mod( 'illdy_jumbotron_general_second_row_from_title' );
-		remove_theme_mod( 'illdy_jumbotron_general_third_row_from_title' );
-
-	}
-
-	// Contact US Title
-	$contacus_title = get_theme_mod( 'illdy_contact_us_title' );
-	if ( $contacus_title ) {
-		set_theme_mod( 'illdy_contact_us_general_title', $contacus_title );
-		remove_theme_mod( 'illdy_contact_us_title' );
-	}
-
-	//Adress Title
-	$address_title = get_theme_mod( 'illdy_contact_us_address_title' );
-	if ( $address_title ) {
-		set_theme_mod( 'illdy_contact_us_general_address_title', $address_title );
-		remove_theme_mod( 'illdy_contact_us_address_title' );
-	}
-
-	//Support Title
-	$support_title = get_theme_mod( 'illdy_contact_us_customer_support_title' );
-	if ( $support_title ) {
-		set_theme_mod( 'illdy_contact_us_general_customer_support_title', $support_title );
-		remove_theme_mod( 'illdy_contact_us_customer_support_title' );
-	}
-}// End if().
-
-if ( is_admin() ) {
-	$color_scheme = get_theme_mod( 'illdy_color_scheme' );
-	if ( 'Illdy' == $color_scheme ) {
-		remove_theme_mod( 'illdy_color_scheme' );
+		set_theme_mod( 'illdy_testimonials_update', true );
 	}
 }
+
+if ( ! function_exists( 'illdy_run_migrations' ) ) {
+	/**
+	 * Runs the upgrade steps once per theme version and active theme.
+	 */
+	function illdy_run_migrations() {
+		$done       = get_option( 'illdy_migrated_version', array() );
+		$done       = is_array( $done ) ? $done : array();
+		$stylesheet = get_stylesheet();
+
+		if ( ! isset( $done[ $stylesheet ] ) || ILLDY_VERSION !== $done[ $stylesheet ] ) {
+			illdy_migrate_legacy_settings();
+
+			$done[ $stylesheet ] = ILLDY_VERSION;
+			update_option( 'illdy_migrated_version', $done );
+		}
+
+		illdy_migrate_jetpack_testimonials();
+	}
+}
+
+illdy_run_migrations();

@@ -1,11 +1,12 @@
 <?php
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed -- the class and the pluggable function that boots it stay together, as in every release since 1.0.
 
 if ( ! function_exists( 'illdy_call_related_posts' ) ) {
 
 	function illdy_call_related_posts() {
 		$display_related_blog_posts = get_theme_mod( 'illdy_enable_related_blog_posts', 1 );
 
-		if ( 1 == $display_related_blog_posts ) {
+		if ( 1 === (int) $display_related_blog_posts ) {
 
 			// instantiate the class & load everything else
 			Illdy_Related_Posts_Output::get_instance();
@@ -70,7 +71,12 @@ if ( ! class_exists( 'Illdy_Related_Posts_Output' ) ) {
 		 *
 		 * @return string                    HTML markup to display related posts
 		 **/
-		function output_related_posts() {
+		public function output_related_posts() {
+			// Nothing about a locked post is shown until its password is entered.
+			if ( post_password_required() ) {
+				return;
+			}
+
 			global $post;
 
 			$output = '';
@@ -116,7 +122,7 @@ if ( ! class_exists( 'Illdy_Related_Posts_Output' ) ) {
 
 			wp_reset_postdata();
 
-			echo $output;
+			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every part is escaped where it is built.
 		}
 	}
-}// End if().
+}

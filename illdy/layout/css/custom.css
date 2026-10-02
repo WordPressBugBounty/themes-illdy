@@ -15,8 +15,6 @@
 	visibility: visible;
 }
 
-.woocommerce {}
-
 .woocommerce h1.page-title,
 .woocommerce div.product .product_title,
 .woocommerce #reviews #comments h2,
@@ -42,7 +40,7 @@
 .woocommerce-cart .wc-proceed-to-checkout a.checkout-button,
 .woocommerce #payment #place_order, .woocommerce-page #payment #place_order {
 	background-color: #f1d204;
-	color: #ffffff;
+	color: #fff;
 	text-transform: uppercase;
 	-webkit-transition: all .3s;
 	-moz-transition: all .3s;
@@ -66,17 +64,17 @@
 .woocommerce-page #payment #place_order:hover,
 .woocommerce-page #payment #place_order:focus {
 	background: rgba(241, 210, 4, 0.9);
-	color: #ffffff;
+	color: #fff;
 }
 
 .woocommerce ul.products li.product h3 {
-	color: #000000;
+	color: #000;
 }
 
 .woocommerce .star-rating:before,
 .woocommerce .star-rating span:before,
 .woocommerce p.stars a:before {
-	color: #000000;
+	color: #000;
 }
 
 .woocommerce .quantity .qty {
@@ -84,27 +82,24 @@
 }
 
 .woocommerce div.product .woocommerce-product-rating a {
-	color: #000000;
+	color: #000;
 }
 
 .woocommerce div.product div.summary .product_meta .posted_in a {
-	color: #000000;
+	color: #000;
 }
 
 .woocommerce a.added_to_cart {
-	color: #000000;
+	color: #000;
 }
 
 .woocommerce .woocommerce-info {
-	border-top-color: #000000;
+	border-top-color: #000;
 }
 
 .woocommerce .woocommerce-info:before {
-	color: #000000;
+	color: #000;
 }
-
-#add_payment_method #payment ul.payment_methods li,
-.woocommerce-checkout #payment ul.payment_methods li {}
 
 #add_payment_method #payment ul.payment_methods li label,
 .woocommerce-checkout #payment ul.payment_methods li label {
@@ -134,7 +129,7 @@
 
 .woocommerce input:not( [type="checkbox"] ):not( [type="radio"] ),
 .woocommerce textarea {
-	border: 1px solid #cccccc;
+	border: 1px solid #ccc;
 }
 .woocommerce-checkout-payment input[type="submit"] {
 	border: 0 none;

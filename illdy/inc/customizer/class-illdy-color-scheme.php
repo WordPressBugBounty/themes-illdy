@@ -124,16 +124,21 @@ if ( ! class_exists( 'Illdy_Color_Scheme' ) ) {
 		public function register( $wp_customize ) {
 			foreach ( $this->controls as $id => $props ) {
 				$wp_customize->add_setting(
-					$id, array(
+					$id,
+					array(
 						'default'           => isset( $props['default'] ) ? $props['default'] : '',
 						'sanitize_callback' => 'sanitize_hex_color',
-						'transport'         => 'postMessage',
+						// Nothing in the preview applies these live, so postMessage meant a
+						// colour change showed nothing until the page was reloaded.
+						'transport'         => 'refresh',
 					)
 				);
 
 				$wp_customize->add_control(
 					new WP_Customize_Color_Control(
-						$wp_customize, $id, array(
+						$wp_customize,
+						$id,
+						array(
 							'label'       => isset( $props['label'] ) ? $props['label'] : $id,
 							'description' => isset( $props['description'] ) ? $props['description'] : '',
 							'section'     => isset( $props['section'] ) ? $props['section'] : 'colors',

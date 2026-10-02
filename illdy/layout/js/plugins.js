@@ -53,6 +53,39 @@ jQuery( document ).ready( function( $ ) {
     }
   }
 
+  var l10n = $.extend( {
+    previous: 'Previous',
+    next: 'Next',
+    slide: 'Go to slide %d'
+  }, window.illdyPlugins || {} );
+
+  /*
+   * Owl Carousel builds its controls without names and, for loop: true, clones
+   * the first and last items, ids included. Every testimonial widget id was
+   * therefore on the page three times, and the dots were empty buttons.
+   * The clones are taken out of the accessibility tree and the tab order, since
+   * the originals are already there.
+   */
+  function tidyCarousel( carousel ) {
+    carousel.find( '.owl-item.cloned' ).attr( 'aria-hidden', 'true' )
+      .find( '[id]' ).removeAttr( 'id' ).end()
+      .find( 'a, button, input, select, textarea' ).attr( 'tabindex', '-1' );
+    carousel.find( '.owl-item.cloned[id]' ).removeAttr( 'id' );
+    carousel.find( '.owl-dot' ).each( function( index ) {
+      $( this ).attr( { type: 'button', 'aria-label': l10n.slide.replace( '%d', index + 1 ) } );
+    } );
+    carousel.find( '.owl-prev' ).attr( { type: 'button', 'aria-label': l10n.previous } );
+    carousel.find( '.owl-next' ).attr( { type: 'button', 'aria-label': l10n.next } );
+  }
+
+  function startCarousel( carousel, options ) {
+    carousel.owlCarousel( $.extend( { navElement: 'button' }, options ) );
+    tidyCarousel( carousel );
+    carousel.on( 'refreshed.owl.carousel changed.owl.carousel', function() {
+      tidyCarousel( carousel );
+    } );
+  }
+
   // Testimonials OWL Carousel
   function testimonialsOwlCarousel() {
     if ( ! hasPlugin( 'owlCarousel' ) ) {
@@ -60,7 +93,7 @@ jQuery( document ).ready( function( $ ) {
     }
 
     if ( $( '.testimonials-carousel.owl-carousel-enabled .widget_illdy_testimonial' ).length > 1 ) {
-      $( '.testimonials-carousel.owl-carousel-enabled' ).owlCarousel( {
+      startCarousel( $( '.testimonials-carousel.owl-carousel-enabled' ), {
         'items': 1,
         'loop': true,
         'dots': true
@@ -93,25 +126,41 @@ jQuery( document ).ready( function( $ ) {
 
     var illdySlider = $( '.illdy-slider' );
     if ( illdySlider.length > 0 ) {
-      illdySlider.owlCarousel( {
+      startCarousel( illdySlider, {
         'items': 1,
         'loop': true,
         'dots': false,
         'autoplay': illdySlider.data( 'autoplay' ),
         'autoplayTimeout': illdySlider.data( 'autoplay-time' )
       } );
-      if ( $( '.illdy-slider-navigation' ).length > 0 ) {
-        $( '.illdy-slider-navigation #prev' ).on( 'click', function( evt ) {
-          evt.preventDefault();
-          illdySlider.trigger( 'prev.owl.carousel' );
-        } );
-        $( '.illdy-slider-navigation #next' ).on( 'click', function( evt ) {
-          evt.preventDefault();
-          illdySlider.trigger( 'next.owl.carousel' );
-        } );
-      }
+      $( '.illdy-slider-navigation .illdy-slider-prev' ).on( 'click', function( evt ) {
+        evt.preventDefault();
+        illdySlider.trigger( 'prev.owl.carousel' );
+      } );
+      $( '.illdy-slider-navigation .illdy-slider-next' ).on( 'click', function( evt ) {
+        evt.preventDefault();
+        illdySlider.trigger( 'next.owl.carousel' );
+      } );
     }
 
+  }
+
+  // Latest News carousel, used once there are more posts than fit in a row.
+  function latestNewsCarousel() {
+    var carousel = $( '.blog-carousel' );
+
+    if ( ! hasPlugin( 'owlCarousel' ) || carousel.children( '.illdy-blog-post' ).length <= 3 ) {
+      return;
+    }
+
+    startCarousel( carousel, {
+      'items': 3,
+      'loop': true,
+      'dots': false,
+      'nav': true,
+      'navText': [ '<i class="fa-solid fa-angle-left" aria-hidden="true"></i>', '<i class="fa-solid fa-angle-right" aria-hidden="true"></i>' ],
+      'responsive': { 0: { items: 1 }, 480: { items: 2 }, 900: { items: 3 } }
+    } );
   }
 
   // Called Functions
@@ -119,6 +168,7 @@ jQuery( document ).ready( function( $ ) {
     illdyProgressBar();
     testimonialsOwlCarousel();
     illdyJumbotronSlider();
+    latestNewsCarousel();
 
     if ( ! $( '#counter' ).length || ! hasPlugin( 'visible' ) ) {
       return;

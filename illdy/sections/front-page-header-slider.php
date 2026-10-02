@@ -1,40 +1,40 @@
 <?php
 
-$slides = get_theme_mod( 'illdy_jumbotron_slides', false );
+$illdy_slides = get_theme_mod( 'illdy_jumbotron_slides', false );
 
-if ( ! $slides ) {
+if ( ! $illdy_slides ) {
 	return;
 }
 
-$autoplay      = get_theme_mod( 'illdy_jumbotron_slider_autoplay', true );
-$navigation    = get_theme_mod( 'illdy_jumbotron_slider_nav', true );
-$autoplay_time = get_theme_mod( 'illdy_jumbotron_slider_autoplay_time', 5000 );
+$illdy_autoplay      = get_theme_mod( 'illdy_jumbotron_slider_autoplay', true );
+$illdy_navigation    = get_theme_mod( 'illdy_jumbotron_slider_nav', true );
+$illdy_autoplay_time = get_theme_mod( 'illdy_jumbotron_slider_autoplay_time', 5000 );
 
 ?>
-<div class="illdy-slider illdy-jumbotron-background owl-carousel" data-autoplay="<?php echo esc_attr( $autoplay ); ?>" data-autoplay-time="<?php echo esc_attr( $autoplay_time ); ?>">
+<div class="illdy-slider illdy-jumbotron-background owl-carousel" data-autoplay="<?php echo esc_attr( $illdy_autoplay ); ?>" data-autoplay-time="<?php echo esc_attr( $illdy_autoplay_time ); ?>">
 	<?php
 
-	foreach ( (array) $slides as $slide ) {
+	foreach ( (array) $illdy_slides as $illdy_slide ) {
 		// Repeater rows are arrays; guard in case an older value stored objects.
-		$slide = (array) $slide;
+		$illdy_slide = (array) $illdy_slide;
 
-		if ( ! empty( $slide['slide_image'] ) ) {
+		if ( ! empty( $illdy_slide['slide_image'] ) ) {
 			printf(
 				'<div class="illdy-slide" style="background-image:url(%1$s)"><img src="%1$s" alt="" style="display:none"></div>',
-				esc_url( $slide['slide_image'] )
+				esc_url( $illdy_slide['slide_image'] )
 			);
 		}
 	}
 
 	?>
 </div>
-<?php if ( $navigation ) { ?>
+<?php if ( $illdy_navigation ) { ?>
 	<div class="illdy-slider-navigation">
-		<a href="#" id="prev" class="illdy-navigation-button">
-			<i class="fa fa-angle-left" aria-hidden="true"></i>
-		</a>
-		<a href="#" id="next" class="illdy-navigation-button">
-			<i class="fa fa-angle-right" aria-hidden="true"></i>
-		</a>
+		<button type="button" class="illdy-navigation-button illdy-slider-prev" aria-label="<?php esc_attr_e( 'Previous slide', 'illdy' ); ?>">
+			<i class="fa-solid fa-angle-left" aria-hidden="true"></i>
+		</button>
+		<button type="button" class="illdy-navigation-button illdy-slider-next" aria-label="<?php esc_attr_e( 'Next slide', 'illdy' ); ?>">
+			<i class="fa-solid fa-angle-right" aria-hidden="true"></i>
+		</button>
 	</div>
 <?php } ?>

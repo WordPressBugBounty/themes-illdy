@@ -8,50 +8,31 @@
 ?>
 
 <?php
-if ( current_user_can( 'edit_theme_options' ) ) {
-	$counter_background_type  = get_theme_mod( 'illdy_counter_background_type', 'image' );
-	$counter_background_image = get_theme_mod( 'illdy_counter_background_image', esc_url( get_template_directory_uri() . '/layout/images/front-page/front-page-counter.jpg' ) );
-	$counter_background_color = get_theme_mod( 'illdy_counter_background_color', '#000000' );
+/*
+ * The background used to fall back to the defaults only for administrators.
+ * Visitors to a site that never saved these got no background at all, and the
+ * counter's white text on the page's white background: an empty-looking band.
+ * Styling is not placeholder content, so everyone gets the same defaults.
+ */
+$illdy_counter_background_type  = get_theme_mod( 'illdy_counter_background_type', 'image' );
+$illdy_counter_background_image = get_theme_mod( 'illdy_counter_background_image', get_template_directory_uri() . '/layout/images/front-page/front-page-counter.jpg' );
+$illdy_counter_background_color = sanitize_hex_color( (string) get_theme_mod( 'illdy_counter_background_color', '#000000' ) );
+$illdy_counter_background_color = $illdy_counter_background_color ? $illdy_counter_background_color : '#000000';
+
+if ( 'image' === $illdy_counter_background_type && $illdy_counter_background_image ) {
+	$illdy_counter_style = 'background-image: url(' . esc_url( $illdy_counter_background_image ) . ');background-color:' . $illdy_counter_background_color . ';';
 } else {
-	$counter_background_type  = get_theme_mod( 'illdy_counter_background_type' );
-	$counter_background_image = get_theme_mod( 'illdy_counter_background_image' );
-	$counter_background_color = get_theme_mod( 'illdy_counter_background_color' );
+	$illdy_counter_style = 'background-color:' . $illdy_counter_background_color;
 }
-
-?>
-
-<?php
-$counter_background_color = sanitize_hex_color( $counter_background_color );
-
-if ( 'image' == $counter_background_type && $counter_background_image ) :
-	$counter_style = 'background-image: url(' . esc_url( $counter_background_image ) . ');background-color:' . $counter_background_color . ';';
-else :
-	$counter_style = 'background-color:' . $counter_background_color;
-endif;
 ?>
 
 <?php if ( is_active_sidebar( 'front-page-counter-sidebar' ) ) { ?>
 
-<section id="counter" class="front-page-section" style="<?php echo esc_attr( $counter_style ); ?>">
+<section id="counter" class="front-page-section" style="<?php echo esc_attr( $illdy_counter_style ); ?>">
 	<div class="counter-overlay"></div>
 	<div class="container">
 		<div class="row inline-columns">
-			<?php
-			if ( is_active_sidebar( 'front-page-counter-sidebar' ) ) :
-				dynamic_sidebar( 'front-page-counter-sidebar' );
-			elseif ( current_user_can( 'edit_theme_options' ) & defined( 'ILLDY_COMPANION' ) ) :
-				$the_widget_args = array(
-					'before_widget' => '<div class="col-sm-4 widget_illdy_counter">',
-					'after_widget'  => '</div>',
-					'before_title'  => '',
-					'after_title'   => '',
-				);
-
-				the_widget( 'Illdy_Widget_Counter', 'title=' . __( 'Projects', 'illdy' ) . '&data_from=1&data_to=260&data_speed=2000&data_refresh_interval=100', $the_widget_args );
-				the_widget( 'Illdy_Widget_Counter', 'title=' . __( 'Clients', 'illdy' ) . '&data_from=1&data_to=120&data_speed=2000&data_refresh_interval=100', $the_widget_args );
-				the_widget( 'Illdy_Widget_Counter', 'title=' . __( 'Coffes', 'illdy' ) . '&data_from=1&data_to=260&data_speed=2000&data_refresh_interval=100', $the_widget_args );
-			endif;
-			?>
+			<?php dynamic_sidebar( 'front-page-counter-sidebar' ); ?>
 		</div><!--/.row-->
 	</div><!--/.container-->
 </section><!--/#counter.front-page-section-->

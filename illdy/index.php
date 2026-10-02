@@ -25,7 +25,6 @@
 							the_post();
 							get_template_part( 'template-parts/content', get_post_format() );
 						endwhile;
-						wp_reset_query();
 					else :
 						get_template_part( 'template-parts/content', 'none' );
 					endif;

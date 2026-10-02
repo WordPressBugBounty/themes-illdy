@@ -30,7 +30,7 @@ jQuery( document ).ready( function( $ ) {
  		var sections = $('#sub-accordion-panel-illdy_frontpage_panel').sortable('toArray');
  		var s_ordered = [];
  		$.each(sections, function( index, s_id ) {
- 			s_id = s_id.replace( "accordion-section-", "");
+ 			s_id = s_id.replace( 'accordion-section-', '');
  			s_ordered.push(s_id);
 		});
 
@@ -97,7 +97,7 @@ jQuery( document ).ready( function( $ ) {
 				case 'customize-control-sidebars_widgets-front-page-about-sidebar':
 					$.each(widgetList, function ($k, $v) {
 						var individualId = $(this).attr('data-widget-id');
-						if ( individualId.search('illdy_skill') == -1 ) {
+						if ( individualId.search('illdy_skill') === -1 ) {
 							$(this).hide();
 							search.attr('disabled', true);
 						}
@@ -106,7 +106,7 @@ jQuery( document ).ready( function( $ ) {
 				case 'customize-control-sidebars_widgets-front-page-projects-sidebar':
 					$.each(widgetList, function ($k, $v) {
 						var individualId = $(this).attr('data-widget-id');
-						if ( individualId.search('illdy_project') == -1 ) {
+						if ( individualId.search('illdy_project') === -1 ) {
 							$(this).hide();
 							search.attr('disabled', true);
 						}
@@ -115,7 +115,7 @@ jQuery( document ).ready( function( $ ) {
 				case 'customize-control-sidebars_widgets-front-page-services-sidebar':
 					$.each(widgetList, function ($k, $v) {
 						var individualId = $(this).attr('data-widget-id');
-						if ( individualId.search('illdy_service') == -1 ) {
+						if ( individualId.search('illdy_service') === -1 ) {
 							$(this).hide();
 							search.attr('disabled', true);
 						}
@@ -124,7 +124,7 @@ jQuery( document ).ready( function( $ ) {
 				case 'customize-control-sidebars_widgets-front-page-counter-sidebar':
 					$.each(widgetList, function ($k, $v) {
 						var individualId = $(this).attr('data-widget-id');
-						if ( individualId.search('illdy_counter') == -1 ) {
+						if ( individualId.search('illdy_counter') === -1 ) {
 							$(this).hide();
 							search.attr('disabled', true);
 						}
@@ -133,7 +133,7 @@ jQuery( document ).ready( function( $ ) {
 				case 'customize-control-sidebars_widgets-front-page-team-sidebar':
 					$.each(widgetList, function ($k, $v) {
 						var individualId = $(this).attr('data-widget-id');
-						if ( individualId.search('illdy_person') == -1 ) {
+						if ( individualId.search('illdy_person') === -1 ) {
 							$(this).hide();
 							search.attr('disabled', true);
 						}
@@ -146,7 +146,7 @@ jQuery( document ).ready( function( $ ) {
 					$.each(widgetList, function ($k, $v) {
 						search.removeAttr('disabled');
 						var individualId = $(this).attr('data-widget-id');
-						if ( individualId.search('illdy_person') != -1 || individualId.search('illdy_counter') != -1 || individualId.search('illdy_service') != -1 || individualId.search('illdy_skill') != -1 || individualId.search('illdy_project') != -1 || individualId.search('illdy_recent_posts') != -1 ) {
+						if ( individualId.search('illdy_person') !== -1 || individualId.search('illdy_counter') !== -1 || individualId.search('illdy_service') !== -1 || individualId.search('illdy_skill') !== -1 || individualId.search('illdy_project') !== -1 || individualId.search('illdy_recent_posts') !== -1 ) {
 							$(this).hide();
 						} else {
 							$(this).show();
@@ -277,13 +277,14 @@ jQuery( document ).ready( function( $ ) {
         var c;
         if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
             c= hex.substring(1).split('');
-            if(c.length== 3){
+            if(c.length === 3){
                 c= [c[0], c[0], c[1], c[1], c[2], c[2]];
             }
             c= '0x'+c.join('');
             return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+opacity+')';
         }
-        throw new Error('Bad Hex');
+        // A cleared colour is ''; throwing here broke every later preview update.
+        return '';
     }
 
     function update_jumbotron_css(){
@@ -412,21 +413,21 @@ jQuery( document ).ready( function( $ ) {
                 _.each( sections, function( settings, section_ID  ){
                     _.each( settings, function( setting ){
                         wp.customize(setting, function (setting) {
-                            if ( section_ID == 'jumbotron' ) {
+                            if ( section_ID === 'jumbotron' ) {
                                 setting.bind(update_jumbotron_css);
-                            }else if ( section_ID == 'latestnews' ) {
+                            }else if ( section_ID === 'latestnews' ) {
                                 setting.bind(update_latestnews_css);
-                            }else if ( section_ID == 'fullwidth' ) {
+                            }else if ( section_ID === 'fullwidth' ) {
                                 setting.bind(update_fullwidth_css);
-                            }else if ( section_ID == 'about' ) {
+                            }else if ( section_ID === 'about' ) {
                                 setting.bind(update_about_css);
-                            }else if ( section_ID == 'projects' ) {
+                            }else if ( section_ID === 'projects' ) {
                                 setting.bind(update_projects_css);
-                            }else if ( section_ID == 'services' ) {
+                            }else if ( section_ID === 'services' ) {
                                 setting.bind(update_services_css);
-                            }else if ( section_ID == 'testimonials' ) {
+                            }else if ( section_ID === 'testimonials' ) {
                                 setting.bind(update_testimonials_css);
-                            }else if ( section_ID == 'team' ) {
+                            }else if ( section_ID === 'team' ) {
                                 setting.bind(update_team_css);
                             }
                             
@@ -449,14 +450,11 @@ jQuery( document ).ready( function( $ ) {
 
     api.section( 'illdy_404', function( section ) {
         section.expanded.bind( function( isExpanding ) {
-            var newURL = IlldyCustomizer.site_url + '/ihopethisisa404page';
+            var newURL = IlldyCustomizer.home_url + 'illdy-404-preview/';
             if ( isExpanding ) {
-                if ( ! $.inArray( newURL, api.previewer.allowedUrls ) ) {
-                    api.previewer.allowedUrls.push( newURL );
-                }
                 wp.customize.previewer.previewUrl.set( newURL );
             }else{
-                wp.customize.previewer.previewUrl.set( IlldyCustomizer.site_url );
+                wp.customize.previewer.previewUrl.set( IlldyCustomizer.home_url );
             }
 
         } );
@@ -472,7 +470,8 @@ jQuery( document ).ready( function( $ ) {
                 evt.preventDefault();
                 if ( undefined !== newSection ) {
                     api.IlldyNavigateTo = oldSection;
-                    api.section( newSection ).trigger('focus');
+                    // Sections have focus(); trigger('focus') did nothing.
+                    api.section( newSection ).focus();
                 }
             });
         }

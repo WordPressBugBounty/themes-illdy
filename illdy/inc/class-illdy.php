@@ -1,16 +1,16 @@
 <?php
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed -- the class and the pluggable function that boots it stay together, as in every release since 1.0.
 
 
 class Illdy {
 
 	public $theme_slug = 'illdy';
 
-	function __construct() {
+	public function __construct() {
 
 		$this->init_color_scheme();
 
 		add_filter( 'sidebars_widgets', array( $this, 'remove_specific_widget' ) );
-
 	}
 
 	public function init_color_scheme() {
@@ -43,7 +43,7 @@ class Illdy {
 				'epsilon_contrast_color'         => array(
 					'label'       => __( 'Contrast Color', 'illdy' ),
 					'description' => __( 'The color used for paragraphs.', 'illdy' ),
-					'default'     => '#8c9597',
+					'default'     => '#6b7375',
 					'section'     => 'colors',
 					'hover-state' => false,
 				),
@@ -59,7 +59,6 @@ class Illdy {
 		);
 
 		new Illdy_Color_Scheme( $handler, $args );
-
 	}
 
 	/**
@@ -103,7 +102,6 @@ class Illdy {
 
 		return $sidebars_widgets;
 	}
-
 }
 
 /**

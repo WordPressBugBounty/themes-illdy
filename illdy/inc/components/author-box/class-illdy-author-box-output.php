@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed -- the class and the pluggable function that boots it stay together, as in every release since 1.0.
 
 if ( ! class_exists( 'Illdy_Author_Box_Output' ) ) {
 
@@ -55,7 +56,12 @@ if ( ! class_exists( 'Illdy_Author_Box_Output' ) ) {
 		 *
 		 * @return string
 		 */
-		function output_author_box() {
+		public function output_author_box() {
+			// Nothing about a locked post is shown until its password is entered.
+			if ( post_password_required() ) {
+				return;
+			}
+
 			$output = '';
 
 			$output     .= '<div class="blog-post-author clearfix">';
@@ -64,10 +70,10 @@ if ( ! class_exists( 'Illdy_Author_Box_Output' ) ) {
 				$output .= ( get_the_author_meta( 'description' ) ) ? '<div>' . wp_kses_post( get_the_author_meta( 'description' ) ) . '</div>' : '';
 			$output     .= '</div><!--/.blog-post-author.clearfix-->';
 
-			echo $output;
+			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every part is escaped where it is built; get_avatar() is core markup.
 		}
 	}
-}// End if().
+}
 
 if ( ! function_exists( 'illdy_call_author_box_class' ) ) {
 	/**
@@ -81,7 +87,7 @@ if ( ! function_exists( 'illdy_call_author_box_class' ) ) {
 	function illdy_call_author_box_class() {
 		$display_author_box = get_theme_mod( 'illdy_enable_author_box_blog_posts', 1 );
 
-		if ( 1 == $display_author_box ) {
+		if ( 1 === (int) $display_author_box ) {
 			// instantiate the class & load everything else
 			Illdy_Author_Box_Output::get_instance();
 		}

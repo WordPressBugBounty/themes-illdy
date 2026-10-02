@@ -20,8 +20,8 @@ if ( post_password_required() ) {
 <div id="comments">
 	<?php if ( have_comments() ) : ?>
 			<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : ?>
-				<nav id="comment-nav-above" class="navigation comment-navigation" role="navigation">
-					<h2 class="screen-reader-text"><?php _e( 'Comment navigation', 'illdy' ); ?></h2>
+				<nav id="comment-nav-above" class="navigation comment-navigation" aria-label="<?php esc_attr_e( 'Comments', 'illdy' ); ?>">
+					<h2 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', 'illdy' ); ?></h2>
 					<div class="nav-links">
 						<div class="nav-previous"><?php previous_comments_link( __( 'Older Comments', 'illdy' ) ); ?></div>
 						<div class="nav-next"><?php next_comments_link( __( 'Newer Comments', 'illdy' ) ); ?></div>
@@ -32,32 +32,34 @@ if ( post_password_required() ) {
 			<div id="comments-list">
 				<h3 class="medium">
 					<?php
-						$comments_number = get_comments_number();
-					if ( '1' === $comments_number ) {
+						$illdy_comments_number = (int) get_comments_number();
+					if ( 1 === $illdy_comments_number ) {
 						/* translators: %s: post title */
-						printf( _x( 'One thought to &ldquo;%s&rdquo;', 'comments title', 'illdy' ), get_the_title() );
+						printf( esc_html_x( 'One thought to &ldquo;%s&rdquo;', 'comments title', 'illdy' ), '<span>' . wp_kses_post( get_the_title() ) . '</span>' );
 					} else {
 						printf(
-							/* translators: 1: number of comments, 2: post title */
-							_nx(
-								'%1$s thought to &ldquo;%2$s&rdquo;',
-								'%1$s thoughts to &ldquo;%2$s&rdquo;',
-								$comments_number,
-								'comments title',
-								'illdy'
+							esc_html(
+								/* translators: 1: number of comments, 2: post title */
+								_nx(
+									'%1$s thought to &ldquo;%2$s&rdquo;',
+									'%1$s thoughts to &ldquo;%2$s&rdquo;',
+									$illdy_comments_number,
+									'comments title',
+									'illdy'
+								)
 							),
-							number_format_i18n( $comments_number ),
-							'<span>' . get_the_title() . '</span>'
+							esc_html( number_format_i18n( $illdy_comments_number ) ),
+							'<span>' . wp_kses_post( get_the_title() ) . '</span>'
 						);
 					}
 					?>
 				</h3>
 				<ul class="comments">
 					<?php
+					// The depth comes from Settings > Discussion; it was hard-coded to 5.
 					wp_list_comments(
 						array(
-							'callback'  => 'illdy_comment',
-							'max_depth' => 5,
+							'callback' => 'illdy_comment',
 						)
 					);
 					?>
@@ -65,8 +67,8 @@ if ( post_password_required() ) {
 			</div><!--/#comments-list-->
 
 			<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : ?>
-				<nav id="comment-nav-below" class="navigation comment-navigation" role="navigation">
-					<h2 class="screen-reader-text"><?php _e( 'Comment navigation', 'illdy' ); ?></h2>
+				<nav id="comment-nav-below" class="navigation comment-navigation" aria-label="<?php esc_attr_e( 'Comments', 'illdy' ); ?>">
+					<h2 class="screen-reader-text"><?php esc_html_e( 'Comment navigation', 'illdy' ); ?></h2>
 					<div class="nav-links">
 
 						<div class="nav-previous"><?php previous_comments_link( __( 'Older Comments', 'illdy' ) ); ?></div>
@@ -79,56 +81,37 @@ if ( post_password_required() ) {
 
 	<?php
 		// If comments are closed and there are comments, let's leave a little note, shall we?
-	if ( ! comments_open() && '0' != get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) :
-	?>
-	<p class="no-comments"><?php _e( 'Comments are closed.', 'illdy' ); ?></p>
+	if ( ! comments_open() && get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) :
+		?>
+	<p class="no-comments"><?php esc_html_e( 'Comments are closed.', 'illdy' ); ?></p>
 	<?php endif; ?>
 
 	<?php
-	$commenter = wp_get_current_commenter();
-	$req       = get_option( 'require_name_email' );
-	$aria_req  = ( $req ? " aria-required='true'" : '' );
+	$illdy_commenter = wp_get_current_commenter();
+	// Only required when Settings > Discussion says so; they were always marked required.
+	$illdy_required = get_option( 'require_name_email' ) ? ' required' : '';
 
-	if ( '' != $commenter['comment_author'] ) {
-		$name = esc_attr( $commenter['comment_author'] );
-	} else {
-		$name = '';
-	}
-
-	if ( '' != $commenter['comment_author_email'] ) {
-		$email = esc_attr( $commenter['comment_author_email'] );
-	} else {
-		$email = '';
-	}
-
-	if ( '' != $commenter['comment_author_url'] ) {
-		$url = esc_attr( $commenter['comment_author_url'] );
-	} else {
-		$url = '';
-	}
-
-	$fields = array(
-		'author' => '<div class="row"><div class="col-sm-4"><input class="input-full" placeholder="' . __( 'Name', 'illdy' ) . '" name="author" type="text" value="' . esc_attr( $name ) . '" ' . $aria_req . ' /></div>',
-		'email'  => '<div class="col-sm-4"><input class="input-full" placeholder="' . __( 'Email', 'illdy' ) . '" name="email" type="email" value="' . esc_attr( $email ) . '" ' . $aria_req . ' /></div>',
-		'url'    => '<div class="col-sm-4"><input class="input-full" placeholder="' . __( 'Website', 'illdy' ) . '" name="url" type="url" value="' . esc_url( $url ) . '" /></div>',
+	/*
+	 * The inputs had placeholders but no labels and no ids, so screen readers
+	 * announced unlabelled fields and nothing could point a label at them. The
+	 * labels are visually hidden; the layout is unchanged.
+	 */
+	$illdy_fields = array(
+		'author' => '<div class="row"><div class="col-sm-4"><label class="screen-reader-text" for="author">' . esc_html__( 'Name', 'illdy' ) . '</label><input class="input-full" id="author" placeholder="' . esc_attr__( 'Name', 'illdy' ) . '" name="author" type="text" autocomplete="name" value="' . esc_attr( $illdy_commenter['comment_author'] ) . '"' . $illdy_required . ' /></div>',
+		'email'  => '<div class="col-sm-4"><label class="screen-reader-text" for="email">' . esc_html__( 'Email', 'illdy' ) . '</label><input class="input-full" id="email" placeholder="' . esc_attr__( 'Email', 'illdy' ) . '" name="email" type="email" autocomplete="email" value="' . esc_attr( $illdy_commenter['comment_author_email'] ) . '"' . $illdy_required . ' /></div>',
+		'url'    => '<div class="col-sm-4"><label class="screen-reader-text" for="url">' . esc_html__( 'Website', 'illdy' ) . '</label><input class="input-full" id="url" placeholder="' . esc_attr__( 'Website', 'illdy' ) . '" name="url" type="url" autocomplete="url" value="' . esc_attr( $illdy_commenter['comment_author_url'] ) . '" /></div></div><!--/.row-->',
 	);
 
-	if ( is_user_logged_in() ) {
-		$comment_textarea = '<div class="row"><div class="col-sm-12"><textarea placeholder="' . __( 'Message', 'illdy' ) . '" name="comment" aria-required="true"></textarea></div><!--/.col-sm-12--></div><!--/.row-->';
-	} else {
-		$comment_textarea = '<div class="col-sm-12"><textarea placeholder="' . __( 'Message', 'illdy' ) . '" name="comment" aria-required="true"></textarea></div><!--/.col-sm-12--></div><!--/.row-->';
-	}
-	?>
-	<?php
 	comment_form(
 		array(
-			'fields'         => $fields,
-			'comment_field'  => $comment_textarea,
+			'fields'         => $illdy_fields,
+			// A complete row of its own: logged-in users get no other fields around it.
+			'comment_field'  => '<div class="row"><div class="col-sm-12"><label class="screen-reader-text" for="comment">' . esc_html__( 'Message', 'illdy' ) . '</label><textarea id="comment" placeholder="' . esc_attr__( 'Message', 'illdy' ) . '" name="comment" required></textarea></div><!--/.col-sm-12--></div><!--/.row-->',
 			'id_submit'      => 'input-submit',
-			'label_submit'   => esc_attr__( 'Send', 'illdy' ),
-			'title_reply'    => esc_attr__( 'Leave a comment', 'illdy' ),
+			'label_submit'   => __( 'Send', 'illdy' ),
+			'title_reply'    => __( 'Leave a comment', 'illdy' ),
 			/* translators: %s: name of the comment author being replied to. */
-			'title_reply_to' => esc_attr__( 'Leave a comment to %s', 'illdy' ),
+			'title_reply_to' => __( 'Leave a comment to %s', 'illdy' ),
 		)
 	);
 	?>

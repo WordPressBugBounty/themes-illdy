@@ -24,55 +24,61 @@ if ( ! function_exists( 'illdy_body_classes' ) ) {
  */
 if ( ! function_exists( 'illdy_comment' ) ) {
 	function illdy_comment( $comment, $args, $depth ) {
-		$GLOBALS['comment'] = $comment;
+		// Walker_Comment sets the global comment before calling this.
 		switch ( $comment->comment_type ) :
 			case 'pingback':
 			case 'trackback':
-		?>
+				?>
 		<li class="post pingback">
-			<p><?php _e( 'Pingback:', 'illdy' ); ?> <?php comment_author_link(); ?><?php edit_comment_link( __( '(Edit)', 'illdy' ), ' ' ); ?></p>
-		<?php
+			<p><?php esc_html_e( 'Pingback:', 'illdy' ); ?> <?php comment_author_link( $comment ); ?><?php edit_comment_link( __( '(Edit)', 'illdy' ), ' ' ); ?></p>
+				<?php
 				break;
 			default:
-		?>
+				?>
 		<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
 			<div id="comment-<?php comment_ID(); ?>">
 				<div class="row">
 					<div class="col-sm-2 clearfix">
 						<div class="comment-gravatar">
-							<?php echo get_avatar( $comment, 84 ); ?>
+							<?php echo get_avatar( $comment, 84 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core markup. ?>
 						</div><!--/.comment-gravatar-->
 					</div><!--/.col-sm-2-->
 					<div class="col-sm-10">
-						<?php printf( '%s', get_comment_author_link() ); ?>
-						<?php /* translators: 1: comment date, 2: comment time. */ ?>
-						<time class="comment-time" datetime="<?php printf( '%s-%s-%s', get_the_date( 'Y' ), get_the_date( 'm' ), get_the_date( 'd' ) ); ?>"><?php printf( __( '%1$s at %2$s', 'illdy' ), get_comment_date(), get_comment_time() ); ?></time>
+						<?php comment_author_link( $comment ); ?>
+						<?php // The datetime used to be the post's date, on every comment. ?>
+						<time class="comment-time" datetime="<?php comment_time( 'c' ); ?>">
+						<?php
+						/* translators: 1: comment date, 2: comment time. */
+						printf( esc_html__( '%1$s at %2$s', 'illdy' ), esc_html( get_comment_date( '', $comment ) ), esc_html( get_comment_time() ) );
+						?>
+						</time>
 						<div class="comment-entry markup-format">
 							<?php comment_text(); ?>
 							<?php
-							if ( '0' == $comment->comment_approved ) :
-								_e( 'Your comment is awaiting moderation.', 'illdy' );
+							if ( '0' === (string) $comment->comment_approved ) :
+								esc_html_e( 'Your comment is awaiting moderation.', 'illdy' );
 							endif;
 							?>
 						</div><!--/.comment-entry.markup-format-->
 						<?php
 						comment_reply_link(
 							array_merge(
-								$args, array(
+								$args,
+								array(
 									'depth'     => $depth,
 									'max_depth' => $args['max_depth'],
 								)
 							)
 						);
-							?>
+						?>
 					</div><!--/.col-sm-10-->
 				</div><!--/.row-->
 			</div><!--/#comment-<?php comment_ID(); ?>.row-->
-		<?php
+				<?php
 				break;
 		endswitch;
 	}
-}// End if().
+}
 
 
 /**
@@ -106,10 +112,14 @@ if ( ! function_exists( 'illdy_get_image_id_from_image_url' ) ) {
 /**
  *  Sections order
  */
-if ( ! function_exists( 'illdy_sections_order' ) ) {
-	function illdy_sections_order( $section ) {
-
-		$controls = array(
+if ( ! function_exists( 'illdy_sections_visibility_settings' ) ) {
+	/**
+	 * Front page section (panel id) => the theme mod that shows or hides it.
+	 *
+	 * @return string[]
+	 */
+	function illdy_sections_visibility_settings() {
+		return array(
 			'illdy_panel_about'          => 'illdy_about_general_show',
 			'illdy_panel_projects'       => 'illdy_projects_general_show',
 			'illdy_testimonials_general' => 'illdy_testimonials_general_show',
@@ -120,13 +130,19 @@ if ( ! function_exists( 'illdy_sections_order' ) ) {
 			'illdy_contact_us'           => 'illdy_contact_us_show',
 			'illdy_full_width'           => 'illdy_full_width_general_show',
 		);
+	}
+}
+
+if ( ! function_exists( 'illdy_sections_order' ) ) {
+	function illdy_sections_order( $section ) {
+
+		$controls = illdy_sections_visibility_settings();
 
 		if ( array_key_exists( $section, $controls ) ) {
 			return get_theme_mod( $controls[ $section ], 1 );
 		} else {
 			return true;
 		}
-
 	}
 }
 
@@ -163,7 +179,6 @@ if ( ! function_exists( 'illdy_sections' ) ) {
 				get_template_part( 'sections/front-page', $templates[ $s_id ] );
 			}
 		}
-
 	}
 }
 
@@ -196,6 +211,115 @@ function illdy_hex2rgb( $hex_color, $opacity = 1 ) {
 	list( $r, $g, $b ) = $parts;
 
 	return 'rgba( ' . hexdec( $shorthand ? "$r$r" : $r ) . ', ' . hexdec( $shorthand ? "$g$g" : $g ) . ', ' . hexdec( $shorthand ? "$b$b" : $b ) . ', ' . $opacity . ' )';
+}
+
+if ( ! function_exists( 'illdy_validate_color_mod' ) ) {
+	/**
+	 * A colour theme mod as a hex colour, or '' when the stored value is not one.
+	 *
+	 * The section CSS writes these straight into <style> rules. They are validated
+	 * when saved through the Customizer, but an import, a migration or a direct
+	 * database write is not, and esc_attr() lets ";" and "}" through.
+	 *
+	 * @param mixed $value Stored value.
+	 *
+	 * @return string
+	 */
+	function illdy_validate_color_mod( $value ) {
+		$color = is_string( $value ) ? sanitize_hex_color( $value ) : '';
+
+		return $color ? $color : '';
+	}
+}
+
+if ( ! function_exists( 'illdy_validate_background_size_mod' ) ) {
+	/**
+	 * A background size theme mod, or '' when it is not one of the offered choices.
+	 *
+	 * @param mixed $value Stored value.
+	 *
+	 * @return string
+	 */
+	function illdy_validate_background_size_mod( $value ) {
+		return in_array( $value, array( 'auto', 'contain', 'cover' ), true ) ? $value : '';
+	}
+}
+
+if ( ! function_exists( 'illdy_validate_background_position_mod' ) ) {
+	/**
+	 * A background position theme mod: a keyword or a length, otherwise ''.
+	 *
+	 * These settings have no control of their own any more but are still read.
+	 *
+	 * @param mixed $value Stored value.
+	 *
+	 * @return string
+	 */
+	function illdy_validate_background_position_mod( $value ) {
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		return preg_match( '/^(left|right|center|top|bottom|-?\d+(\.\d+)?(px|%|em|rem|vw|vh)?)$/', trim( $value ) ) ? trim( $value ) : '';
+	}
+}
+
+if ( ! function_exists( 'illdy_register_css_mod_filters' ) ) {
+	/**
+	 * Validates, on read, every theme mod that ends up inside a CSS rule.
+	 */
+	function illdy_register_css_mod_filters() {
+		$colors = array(
+			'epsilon_accent_color',
+			'epsilon_secondary_accent_color',
+			'epsilon_text_color',
+			'epsilon_contrast_color',
+			'epsilon_hover_color',
+			'illdy_sticky_header_background_color',
+			'illdy_preloader_background_color',
+			'illdy_preloader_primary_color',
+			'illdy_preloader_secondly_color',
+			'illdy_jumbotron_general_color',
+			'illdy_jumbotron_first_button_background',
+			'illdy_jumbotron_second_button_background',
+			'illdy_jumbotron_second_button_background_hover',
+			'illdy_jumbotron_title_color',
+			'illdy_jumbotron_points_color',
+			'illdy_jumbotron_descriptions_color',
+			'illdy_jumbotron_first_button_color',
+			'illdy_jumbotron_right_button_color',
+			'illdy_latest_news_button_background',
+			'illdy_latest_news_button_background_hover',
+			'illdy_latest_news_button_color',
+			'illdy_latest_news_post_bakground_color',
+			'illdy_latest_news_post_text_color',
+			'illdy_latest_news_post_text_hover_color',
+			'illdy_latest_news_post_content_color',
+			'illdy_latest_news_post_button_color',
+			'illdy_latest_news_post_button_hover_color',
+			'illdy_testimonials_container_background_color',
+			'illdy_testimonials_text_color',
+			'illdy_testimonials_author_text_color',
+			'illdy_testimonials_dots_color',
+			'illdy_counter_background_color',
+			'illdy_full_width_full_text',
+		);
+
+		foreach ( array( 'jumbotron', 'latest_news', 'full_width', 'about', 'projects', 'services', 'team', 'testimonials' ) as $section ) {
+			$colors[] = 'illdy_' . $section . '_general_color';
+			$colors[] = 'illdy_' . $section . '_title_color';
+			$colors[] = 'illdy_' . $section . '_descriptions_color';
+
+			add_filter( 'theme_mod_illdy_' . $section . '_background_size', 'illdy_validate_background_size_mod' );
+			add_filter( 'theme_mod_illdy_' . $section . '_background_position_x', 'illdy_validate_background_position_mod' );
+			add_filter( 'theme_mod_illdy_' . $section . '_background_position_y', 'illdy_validate_background_position_mod' );
+		}
+
+		foreach ( array_unique( $colors ) as $mod ) {
+			add_filter( 'theme_mod_' . $mod, 'illdy_validate_color_mod' );
+		}
+	}
+	illdy_register_css_mod_filters();
 }
 
 if ( ! function_exists( 'illdy_jumbotron_css' ) ) {
@@ -276,7 +400,7 @@ if ( ! function_exists( 'illdy_jumbotron_css' ) ) {
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_latestnews_css' ) ) {
 	function illdy_latestnews_css() {
@@ -358,7 +482,7 @@ if ( ! function_exists( 'illdy_latestnews_css' ) ) {
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_fullwidth_css' ) ) {
 	function illdy_fullwidth_css() {
@@ -402,13 +526,13 @@ if ( ! function_exists( 'illdy_fullwidth_css' ) ) {
 		if ( $illdy_full_width_descriptions_color ) {
 			$css .= '#full-width .section-header .section-description {color: ' . esc_attr( $illdy_full_width_descriptions_color ) . ';}';
 		}
-		if ( $illdy_full_width_descriptions_color ) {
+		if ( $illdy_full_width_full_text ) {
 			$css .= '#full-width .top-parallax-section h1, #full-width .top-parallax-section p {color: ' . esc_attr( $illdy_full_width_full_text ) . ';}';
 		}
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_about_css' ) ) {
 	function illdy_about_css() {
@@ -454,7 +578,7 @@ if ( ! function_exists( 'illdy_about_css' ) ) {
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_projects_css' ) ) {
 	function illdy_projects_css() {
@@ -500,7 +624,7 @@ if ( ! function_exists( 'illdy_projects_css' ) ) {
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_services_css' ) ) {
 	function illdy_services_css() {
@@ -546,7 +670,7 @@ if ( ! function_exists( 'illdy_services_css' ) ) {
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_team_css' ) ) {
 	function illdy_team_css() {
@@ -592,7 +716,7 @@ if ( ! function_exists( 'illdy_team_css' ) ) {
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_testimonials_css' ) ) {
 	function illdy_testimonials_css() {
@@ -602,7 +726,7 @@ if ( ! function_exists( 'illdy_testimonials_css' ) ) {
 		$illdy_testimonials_general_background_image = get_theme_mod( 'illdy_testimonials_general_background_image', get_template_directory_uri() . '/layout/images/testiomnials-background.jpg' );
 		$illdy_testimonials_background_size          = get_theme_mod( 'illdy_testimonials_background_size' );
 		$illdy_testimonials_background_repeat        = get_theme_mod( 'illdy_testimonials_background_repeat' );
-		$illdy_testimonials_background_attachment    = get_theme_mod( 'illdy_testimonials_background_attachment' );
+		$illdy_testimonials_background_attachment    = get_theme_mod( 'illdy_testimonials_background_attachment', 0 );
 
 		$illdy_testimonials_author_text_color          = get_theme_mod( 'illdy_testimonials_author_text_color' );
 		$illdy_testimonials_text_color                 = get_theme_mod( 'illdy_testimonials_text_color' );
@@ -654,7 +778,7 @@ if ( ! function_exists( 'illdy_testimonials_css' ) ) {
 
 		return $css;
 	}
-} // End if().
+}
 
 if ( ! function_exists( 'illdy_output_sections_css' ) ) {
 
@@ -745,5 +869,5 @@ function illdy_get_video_settings() {
 	} elseif ( ! empty( $video_type['type'] ) ) {
 		$settings['mimeType'] = $video_type['type'];
 	}
-	return apply_filters( 'header_video_settings', $settings );
+	return apply_filters( 'header_video_settings', $settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter, so plugins that adjust the header video apply here too.
 }

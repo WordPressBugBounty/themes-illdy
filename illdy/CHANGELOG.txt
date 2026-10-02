@@ -1,3 +1,55 @@
+### V 2.4.0
+Audit release for WordPress 7.1 and PHP 8.5, tested on WordPress 7.1.2 / PHP 8.5
+with jQuery 3.7.1 and with jQuery 4.0 without Migrate. Every page, the Customizer,
+About Illdy, the widget screens and the block editor load with no PHP notices and no
+console errors.
+
+Libraries and assets
+- Font Awesome 4 is replaced by Font Awesome 7.3.1, with the version 4 layer so icon
+  classes saved by earlier versions keep rendering. Pages that only show the theme's
+  own icons load a 24 KB subset instead of the full 112 KB set and its fonts.
+- Bootstrap 3.3.6 is updated to 3.4.1, its final release (the theme stays on Bootstrap
+  3; plugins print Bootstrap 3 markup). Its Glyphicons font is where Bootstrap looks.
+- Lato, Poppins and Source Sans Pro are served from the theme; no request goes to
+  Google. Asset handles carry the theme prefix.
+- The bundled libraries (Owl Carousel, fancyBox, countTo, sticky header) work on
+  jQuery 4 and without jQuery Migrate.
+- The preloader no longer pulls jQuery into the head. The upgrade steps for settings
+  from Illdy 1.x run once per version instead of on every request (one of them queried
+  the database on every page view for ever). The block editor loads the theme's type.
+
+Fixes
+- Featured images appeared neither in the header nor in the post on sites that never
+  saved "Enable featured image as header image".
+- The counter section was white text on a white page for visitors.
+- Kali Forms was never detected, so the contact form picker was hidden.
+- Colour scheme, site title and several other Customizer settings showed nothing until
+  a reload; preview scripts threw on the text logo and on clearing a button colour;
+  "Scroll with Page" did the opposite of its label; "Show category" did nothing; the
+  logo width default was ignored on the front end.
+- The comment form: labels, ids, the website field's style, the cookies checkbox, the
+  "required" setting, comment dates, and the thread depth from Settings > Discussion.
+- Carousels duplicated element ids; archives, search and the shop used narrower
+  columns than the blog and showed placeholder widgets to visitors; the search page
+  title said "Archives"; Jetpack Infinite Scroll pointed at a missing container;
+  centred images did not centre; WooCommerce product blocks got list bullets; the
+  icon styles lost in the Font Awesome update are back; service icons are centred
+  again (Font Awesome 7 gives icons a fixed width).
+- The footer copyright accepts {year}, replaced with the current year, so a saved
+  copyright line no longer goes out of date. The default text uses it.
+- The Google+ setting is removed (Google+ shut down in 2019).
+
+Accessibility
+- A skip link, a main landmark, labelled navigation, one h1 on every view, labelled
+  menu, carousel, slider, pagination and back-to-top controls, a visible keyboard
+  focus outline, pinch zoom no longer disabled, and WCAG AA contrast for body text
+  and links.
+
+Development
+- Grunt and bin/build-release.sh are replaced by npm scripts (build, verify, lint,
+  minify, i18n, version and image checks) and GitHub Actions CI. ESLint, Stylelint
+  and PHPCS (WordPress-Extra, PHP 7.4+) all pass with zero warnings.
+
 ### V 2.3.0
 Modernisation pass for WordPress 7 / PHP 8.5. Verified against WordPress 7.0.2
 on PHP 8.5.6: the theme now boots with zero PHP notices, warnings or

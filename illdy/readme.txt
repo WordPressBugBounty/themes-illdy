@@ -4,9 +4,9 @@ Contributors: Colorlib
 Tags: blog, entertainment, portfolio, custom-header, custom-logo, custom-menu, featured-images, footer-widgets, threaded-comments, translation-ready, theme-options
 
 Requires at least: 5.8
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,9 +28,9 @@ matching the License header in style.css.
 Unless otherwise specified, all the theme files, scripts and images are licensed under GNU General Public License.
 The exceptions to this license are as follows:
 
-* Bootstrap v3.3.6 (https://getbootstrap.com):
-    Copyright 2011-2014 Twitter, Inc.
-    Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+* Bootstrap v3.4.1, CSS and Glyphicons font (https://getbootstrap.com/docs/3.4/):
+    Copyright 2011-2019 Twitter, Inc.
+    Licensed under MIT (https://github.com/twbs/bootstrap/blob/v3.4.1/LICENSE)
 
 * Images:
 	All images are from Pxhere(	https://pxhere.com/	) and Stocksnap( https://stocksnap.io	)
@@ -60,14 +60,24 @@ The exceptions to this license are as follows:
         https://pxhere.com/en/photo/1260525
 
 
-* Font Awesome:
-	License: SIL OFL 1.1
-	URL: http://scripts.sil.org/OFL
+* Font Awesome Free 7.3.1 (https://fontawesome.com), including the subset in
+  layout/css/fontawesome-subset/ built from it:
+	Copyright Fonticons, Inc.
+	Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT (https://fontawesome.com/license/free)
 
-* Google Fonts:
-	Source Sans Pro (https://www.google.com/fonts/specimen/Source+Sans+Pro)
-	License under SIL Open Font License, 1.1
-	Copyright © Paul D. Hunt (https://plus.google.com/108888178732927400671/about)
+* Fonts bundled in assets/fonts/google/, all under the SIL Open Font License 1.1
+  (https://openfontlicense.org):
+	Lato, Copyright (c) 2010-2014 Łukasz Dziedzic (https://fonts.google.com/specimen/Lato)
+	Poppins, Copyright 2020 The Poppins Project Authors (https://fonts.google.com/specimen/Poppins)
+	Source Sans Pro, Copyright 2010-2020 Adobe (https://fonts.google.com/specimen/Source+Sans+3)
+
+* Handlebars (https://handlebarsjs.com), used in the Customizer preview only:
+	Copyright Yehuda Katz
+	Licensed under the MIT license.
+
+* jQuery.scrollTo (https://github.com/flesler/jquery.scrollTo), used in the Customizer preview only:
+	Copyright Ariel Flesler
+	Licensed under the MIT license.
 
 * owl-carousel.js (http://www.owlcarousel.owlgraphic.com/):
 	Copyright 2013 Bartosz Wojciechowski
@@ -98,6 +108,21 @@ The exceptions to this license are as follows:
 	Licensed under GPLv3 for open source use.
 
 == Changelog ==
+
+= 2.4.0 =
+Audit release for WordPress 7.1 / PHP 8.5, tested with jQuery 3.7.1 and jQuery 4.0
+without Migrate. See CHANGELOG.txt for the full list; the headlines are:
+
+* Font Awesome 7.3.1 (with the version 4 layer), loaded as a small subset where only
+  the theme's own icons appear; Bootstrap 3.4.1; fonts served from the theme.
+* Fixed featured images that showed nowhere by default, an invisible counter section
+  for visitors, the hidden Kali Forms picker, Customizer settings that did not preview
+  or did the opposite of their label, off-centre service icons, and the comment form.
+* The footer copyright accepts {year} for the current year.
+* Accessibility: skip link, landmarks, one h1 per view, labelled controls, focus
+  outline, zoom allowed, AA contrast for body text.
+* Faster: no per-request upgrade queries, jQuery kept out of the head.
+* Development tooling moves from Grunt to npm scripts with CI; every linter at zero.
 
 = 2.3.0 =
 Modernisation release for WordPress 7 / PHP 8.5. See CHANGELOG.txt for the full

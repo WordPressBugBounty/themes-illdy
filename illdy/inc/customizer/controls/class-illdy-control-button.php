@@ -6,9 +6,6 @@ if ( ! class_exists( 'Illdy_Control_Button' ) ) {
 		public $text       = '';
 		public $section_id = '';
 		public $icon       = '';
-		public function __construct( WP_Customize_Manager $manager, $id, array $args ) {
-			parent::__construct( $manager, $id, $args );
-		}
 		public function to_json() {
 			parent::to_json();
 			$this->json['text']       = $this->text;
@@ -17,7 +14,7 @@ if ( ! class_exists( 'Illdy_Control_Button' ) ) {
 		}
 
 		public function content_template() {
-	?>
+			?>
 			<div class="illdy-button">
 				<# if ( data.section_id ) { #>
 					<a href="#" class="illdy-button" data-section="{{ data.section_id }}">
@@ -27,7 +24,7 @@ if ( ! class_exists( 'Illdy_Control_Button' ) ) {
 						{{ data.text }}</a>
 				<# } #>
 			</div>
-		<?php
+			<?php
 		}
 	}
 }

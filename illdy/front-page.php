@@ -7,83 +7,55 @@
  */
 
 
+/*
+ * With "Your latest posts" as the homepage this is the blog index, so it renders
+ * exactly like index.php instead of keeping its own narrower copy of it.
+ */
+if ( 'posts' === get_option( 'show_on_front' ) ) {
+	get_template_part( 'index' );
+	return;
+}
+
 get_header();
 
-
-if ( get_option( 'show_on_front' ) == 'posts' ) : ?>
-
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-7">
-				<section id="blog">
-					<?php do_action( 'illdy_above_content_after_header' ); ?>
-					<?php
-					if ( have_posts() ) :
-						while ( have_posts() ) :
-							the_post();
-							get_template_part( 'template-parts/content', get_post_format() );
-						endwhile;
-					else :
-						get_template_part( 'template-parts/content', 'none' );
-					endif;
-					?>
-					<?php do_action( 'illdy_after_content_above_footer' ); ?>
-				</section><!--/#blog-->
-			</div><!--/.col-sm-7-->
-			<?php get_sidebar(); ?>
-		</div><!--/.row-->
-	</div><!--/.container-->
-
-<?php
-else :
-
-	$sections_order_first_section   = get_theme_mod( 'illdy_general_sections_order_first_section', 1 );
-	$sections_order_second_section  = get_theme_mod( 'illdy_general_sections_order_second_section', 2 );
-	$sections_order_third_section   = get_theme_mod( 'illdy_general_sections_order_third_section', 3 );
-	$sections_order_fourth_section  = get_theme_mod( 'illdy_general_sections_order_fourth_section', 4 );
-	$sections_order_fifth_section   = get_theme_mod( 'illdy_general_sections_order_fifth_section', 5 );
-	$sections_order_sixth_section   = get_theme_mod( 'illdy_general_sections_order_sixth_section', 6 );
-	$sections_order_seventh_section = get_theme_mod( 'illdy_general_sections_order_seventh_section', 7 );
-	$sections_order_eighth_section  = get_theme_mod( 'illdy_general_sections_order_eighth_section', 8 );
-
-	if ( have_posts() ) :
-		while ( have_posts() ) :
-			the_post();
-			/*
-			 * Run the standard `the_content` pipeline. Echoing get_the_content() raw
-			 * meant shortcodes, dynamic blocks and oEmbeds on a static front page were
-			 * never rendered, and the raw string was printed unescaped.
-			 */
-			$static_page_content = apply_filters( 'the_content', get_the_content() );
-			$static_page_content = str_replace( ']]>', ']]&gt;', $static_page_content );
-			if ( '' !== trim( $static_page_content ) ) :
+if ( have_posts() ) :
+	while ( have_posts() ) :
+		the_post();
+		/*
+		 * Run the standard `the_content` pipeline. Echoing get_the_content() raw
+		 * meant shortcodes, dynamic blocks and oEmbeds on a static front page were
+		 * never rendered, and the raw string was printed unescaped.
+		 */
+		$illdy_static_page_content = apply_filters( 'the_content', get_the_content() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter.
+		$illdy_static_page_content = str_replace( ']]>', ']]&gt;', $illdy_static_page_content );
+		if ( '' !== trim( $illdy_static_page_content ) ) :
 			?>
-				<section class="front-page-section" id="static-page-content">
-					<div class="section-header">
-						<div class="container">
-							<div class="row">
-								<div class="col-sm-12">
-									<h3><?php the_title(); ?></h3>
-								</div><!--/.col-sm-12-->
-							</div><!--/.row-->
-						</div><!--/.container-->
-					</div><!--/.section-header-->
-					<div class="section-content">
-						<div class="container-fluid">
-							<div class="row">
-								<div class="col-sm-10 col-sm-offset-1">
-									<?php echo $static_page_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already through the_content filters. ?>
-								</div>
+			<section class="front-page-section" id="static-page-content">
+				<div class="section-header">
+					<div class="container">
+						<div class="row">
+							<div class="col-sm-12">
+								<h3><?php the_title(); ?></h3>
+							</div><!--/.col-sm-12-->
+						</div><!--/.row-->
+					</div><!--/.container-->
+				</div><!--/.section-header-->
+				<div class="section-content">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<?php echo $illdy_static_page_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already through the_content filters. ?>
 							</div>
 						</div>
 					</div>
-				</section>
-			<?php endif;
-		endwhile;
-	endif;
-
-	illdy_sections();
-
+				</div>
+			</section>
+			<?php
+		endif;
+	endwhile;
 endif;
 
-get_footer(); ?>
+illdy_sections();
+
+get_footer();
+

@@ -1,8 +1,5 @@
 jQuery( document ).ready( function( $ ) {
   var windowWidth = $( window ).width();
-  var windowHeight = $( window ).height();
-  var documentWidth = $( document ).width();
-  var documentHeight = $( document ).height();
 
   // If is IOS
   function isIsIOS() {
@@ -17,8 +14,14 @@ jQuery( document ).ready( function( $ ) {
     $( 'body:not(.single-product) a[href*="#"]:not([href="#"])' ).on( 'click', function() {
       var target;
       if ( location.pathname.replace( /^\//, '' ) === this.pathname.replace( /^\//, '' ) && location.hostname === this.hostname ) {
-        target = $( this.hash );
-        target = target.length ? target : $( '[name=' + this.hash.slice( 1 ) + ']' );
+        // The hash comes from the link and can hold characters that are not a
+        // valid selector, which made jQuery throw and the link do nothing.
+        try {
+          target = $( this.hash );
+          target = target.length ? target : $( '[name="' + this.hash.slice( 1 ) + '"]' );
+        } catch {
+          return true;
+        }
         if ( target.length ) {
           $( 'html,body' ).animate( {
             scrollTop: target.offset().top - $( '#sticky-wrapper' ).outerHeight( true )
@@ -31,13 +34,16 @@ jQuery( document ).ready( function( $ ) {
 
   // Open Responsive Menu
   function openResponsiveMenu() {
-    $( '.open-responsive-menu' ).on('click',function() {
-      var top = $( '.top-header' ).outerHeight(),
+    $( '.open-responsive-menu' ).on( 'click', function() {
+      var button = $( this ),
+          top = $( '.top-header' ).outerHeight(),
           height = $( window ).height() - top;
 
       if ( $( '#header' ).hasClass( 'header-has-sticky-menu' ) ) {
         $( '.responsive-menu' ).css( { 'top': top, 'max-height': height } );
       }
+
+      button.attr( 'aria-expanded', 'true' === button.attr( 'aria-expanded' ) ? 'false' : 'true' );
 
       $( '.responsive-menu' ).toggle( 'slow', function() {
         $( this ).toggleClass( 'active' );
@@ -139,7 +145,7 @@ jQuery( document ).ready( function( $ ) {
   } );
 
   // Window Resize
-  $( window ).resize( function() {
+  $( window ).on( 'resize', function() {
 
     // Called Functions
     $( function() {
@@ -158,7 +164,7 @@ jQuery( document ).ready( function( $ ) {
              'iPod'
            ].includes(navigator.platform)
            // iPad on iOS 13 detection
-           || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+           || (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
   }
 
 } );

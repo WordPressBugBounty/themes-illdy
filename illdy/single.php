@@ -7,7 +7,7 @@
  */
 
 global $post;
-$sidebar_enabled = get_post_meta( $post->ID, 'illdy-sidebar-enable', true );
+$illdy_sidebar_enabled = get_post_meta( $post->ID, 'illdy-sidebar-enable', true );
 
 ?>
 

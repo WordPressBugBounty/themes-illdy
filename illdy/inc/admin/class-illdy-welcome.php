@@ -421,8 +421,21 @@ if ( ! class_exists( 'Illdy_Welcome' ) ) {
 									printf( esc_html__( 'Version %s', 'illdy' ), esc_html( $version ) );
 									?>
 								<?php endif; ?>
-								<?php if ( '' !== $author && '' !== $version ) : ?><span aria-hidden="true"> · </span><?php endif; ?>
-								<?php echo wp_kses( $author, array( 'a' => array( 'href' => array(), 'title' => array() ) ) ); ?>
+								<?php
+								if ( '' !== $author && '' !== $version ) :
+									?>
+									<span aria-hidden="true"> · </span><?php endif; ?>
+								<?php
+								echo wp_kses(
+									$author,
+									array(
+										'a' => array(
+											'href'  => array(),
+											'title' => array(),
+										),
+									)
+								);
+								?>
 							</p>
 						<?php endif; ?>
 					</div>

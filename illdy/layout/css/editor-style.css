@@ -1,0 +1,94 @@
+/*
+ * Block editor styles: the theme's type and colours, and the width of the column
+ * a post or page renders in (750px beside the sidebar), so the editor shows what
+ * the front end will. Loaded by add_editor_style() with assets/css/google-fonts.css.
+ */
+body {
+	font-family: Lato, sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 26px;
+	color: #6b7375;
+	background-color: #fff;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.editor-post-title__input,
+.wp-block-post-title {
+	font-family: Poppins, sans-serif;
+	font-weight: 700;
+	color: #545454;
+}
+
+h1 {
+	font-size: 80px;
+	line-height: 84px;
+}
+
+/* The title is printed over the header image on the front end, not in the column. */
+.editor-post-title__input,
+.wp-block-post-title {
+	font-size: 40px;
+	line-height: 1.2;
+}
+
+h2 {
+	font-size: 65px;
+	line-height: 70px;
+}
+
+h3 {
+	font-size: 35px;
+	line-height: 38px;
+}
+
+h4 {
+	font-size: 25px;
+	line-height: 32px;
+}
+
+h5 {
+	font-size: 23px;
+	line-height: 32px;
+}
+
+h6 {
+	font-size: 20px;
+	line-height: 24px;
+}
+
+a {
+	color: #e2c504;
+	text-decoration: underline;
+}
+
+a:hover,
+a:focus {
+	text-decoration: none;
+}
+
+blockquote {
+	margin: 0;
+	padding: 0;
+	font-size: 30px;
+	line-height: 50px;
+	color: #757575;
+	border-left: none;
+}
+
+.wp-block {
+	max-width: 750px;
+}
+
+.wp-block[data-align="wide"] {
+	max-width: 1140px;
+}
+
+.wp-block[data-align="full"] {
+	max-width: none;
+}

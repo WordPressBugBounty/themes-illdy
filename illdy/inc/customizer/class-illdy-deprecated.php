@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName -- one file of shims for many removed classes.
 /**
  * Backwards-compatibility shims for the removed Epsilon Framework classes.
  *
@@ -17,6 +17,8 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound, Generic.Files.OneObjectStructurePerFile.MultipleFound, Universal.Files.SeparateFunctionsFromOO.Mixed, WordPress.Files.FileName.InvalidClassFileName, Generic.CodeAnalysis.UnusedFunctionParameter, PSR2.Methods.MethodDeclaration.Underscore, Universal.NamingConventions.NoReservedKeywordParameterNames -- these shims keep the removed framework's class names and method signatures loadable, unchanged.
 
 if ( ! function_exists( 'illdy_deprecated_control' ) ) {
 	/**

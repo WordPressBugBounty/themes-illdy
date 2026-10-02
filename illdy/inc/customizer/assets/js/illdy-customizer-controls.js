@@ -79,7 +79,7 @@
 
 			try {
 				colors = JSON.parse( $input.attr( 'data-colors' ) || '{}' );
-			} catch ( e ) {
+			} catch {
 				return;
 			}
 
@@ -105,7 +105,7 @@
 
 		try {
 			fields = JSON.parse( $wrap.attr( 'data-fields' ) || '[]' );
-		} catch ( e ) {
+		} catch {
 			return;
 		}
 

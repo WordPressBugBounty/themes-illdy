@@ -30,14 +30,14 @@ body {
 body {
     line-height: 26px;
     background-color: #fff;
-    font-family: "Lato", sans-serif;
+    font-family: Lato, sans-serif;
     font-weight: 400;
     font-size: 16px;
-    color: #8c9597;
+    color: #6b7375;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: "Poppins";
+    font-family: Poppins;
 }
 
 h1 {
@@ -79,8 +79,7 @@ h6 {
 textarea,
 input[type="text"],
 input[type="email"],
-input[type="search"],
-input[type="email"] {
+input[type="search"] {
     -webkit-appearance: none;
     border-radius: 0;
 }
@@ -88,13 +87,13 @@ input[type="email"] {
 ul,
 ol {
     font-size: 16px;
-    font-family: "Lato";
+    font-family: Lato;
     line-height: 26px;
     font-weight: 400;
 }
 
 a {
-    color: #8c979e;
+    color: #6b7375;
 }
 
 a:hover, a:focus {
@@ -109,6 +108,7 @@ a:hover, a:focus {
 }
 
 .front-page-section .section-header {
+    width: 100%;
     margin-bottom: 65px;
 }
 
@@ -116,9 +116,6 @@ a:hover, a:focus {
     padding-top: 130px;
 }
 
-.front-page-section .section-header {
-    width: 100%;
-}
 
 .front-page-section .section-header h3 {
     margin: 0 0 5px 0;
@@ -133,8 +130,8 @@ a:hover, a:focus {
     margin-bottom: 0;
     line-height: 26px;
     font-size: 16px;
-    color: #8c9597;
-    font-family: "Lato";
+    color: #6b7375;
+    font-family: Lato;
     font-weight: 400;
 }
 
@@ -192,6 +189,8 @@ a:hover, a:focus {
 }
 
 #header .top-header {
+    position: relative;
+    z-index: 3;
     width: 100%;
     padding-top: 20px;
     padding-bottom: 20px;
@@ -250,7 +249,7 @@ a:hover, a:focus {
     color: #fff;
     position: relative;
     float: left;
-    font-family: "Lato";
+    font-family: Lato;
 }
 
 #header .top-header .header-navigation ul li:first-child {
@@ -266,7 +265,8 @@ a:hover, a:focus {
 
 #header .top-header .header-navigation ul li.menu-item-has-children a:after {
     content: "\f107";
-    font-family: "FontAwesome";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
     font-size: 16px;
     position: absolute;
     top: 0;
@@ -334,10 +334,10 @@ a:hover, a:focus {
     line-height: 40px;
     font-weight: 400;
     font-size: 14px;
-    color: #8c9597;
+    color: #6b7375;
     text-transform: none;
     display: block;
-    font-family: "Lato";
+    font-family: Lato;
 }
 
 #header .top-header .header-navigation ul li.menu-item-has-children .sub-menu li:hover > a,
@@ -410,7 +410,7 @@ a:hover, a:focus {
     font-weight: 700;
     font-size: 80px;
     color: #fff;
-    font-family: "Poppins";
+    font-family: Poppins;
 }
 
 #header .bottom-header h1 span {
@@ -426,7 +426,7 @@ a:hover, a:focus {
     margin-bottom: 60px;
     font-size: 16px;
     color: #fff;
-    font-family: "Lato";
+    font-family: Lato;
     font-weight: 400;
 }
 
@@ -446,7 +446,7 @@ a:hover, a:focus {
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
-    font-family: "Lato";
+    font-family: Lato;
     min-width: 242px;
 }
 
@@ -471,7 +471,7 @@ a:hover, a:focus {
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
-    font-family: "Lato";
+    font-family: Lato;
     min-width: 242px;
 }
 
@@ -547,7 +547,7 @@ a:hover, a:focus {
     font-weight: 400;
     font-size: 16px;
     color: #fff;
-    font-family: "Lato";
+    font-family: Lato;
 }
 
 #about .skill .skill-top .skill-progress-bar .ui-progressbar-value .ui-progressbar-value-top .ui-progressbar-value-triangle {
@@ -573,7 +573,7 @@ a:hover, a:focus {
     margin-left: 8px;
     line-height: 26px;
     font-size: 16px;
-    font-family: "Lato";
+    font-family: Lato;
 }
 
 #about .widget_illdy_skill {
@@ -694,7 +694,7 @@ a:hover, a:focus {
     border-left: none;
     color: #fff;
     font-size: 16px;
-    font-family: "Lato";
+    font-family: Lato;
     font-weight: 400;
 }
 
@@ -716,7 +716,7 @@ a:hover, a:focus {
 #testimonials .section-content .testimonials-carousel .carousel-testimonial .testimonial-meta {
     width: 100%;
     color: #fff;
-    font-family: "Poppins";
+    font-family: Poppins;
 }
 
 #testimonials .section-content .testimonials-carousel .owl-controls {
@@ -778,8 +778,10 @@ a:hover, a:focus {
     font-size: 35px;
 }
 
-#services .section-content .service .service-icon .fa {
+/* Font Awesome 7 gives icons a fixed 1.25em width; a block that wide sits at the left of the centred column. */
+#services .section-content .service .service-icon :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
     display: block;
+    width: auto;
 }
 
 #services .section-content .service .service-title {
@@ -790,9 +792,9 @@ a:hover, a:focus {
 #services .section-content .service .service-entry {
     width: 100%;
     line-height: 26px;
-    color: #8c9597;
+    color: #6b7375;
     font-size: 16px;
-    font-family: "Lato";
+    font-family: Lato;
     font-weight: 400;
 }
 
@@ -808,6 +810,9 @@ a:hover, a:focus {
 #latest-news {
     width: 100%;
     background-color: #222f36;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     padding: 75px 0 85px 0;
     text-align: center;
 }
@@ -844,6 +849,11 @@ a:hover, a:focus {
 
 #latest-news .owl-prev,
 #latest-news .owl-next {
+    padding: 0;
+    border: 0;
+    background: none;
+    line-height: 1;
+    cursor: pointer;
     position: absolute;
     top: 50%;
     font-size: 50px;
@@ -893,7 +903,7 @@ a:hover, a:focus {
     margin: 40px 0 55px 0;
     padding: 0 30px;
     line-height: 26px;
-    color: #8c9597;
+    color: #6b7375;
     font-size: 16px;
 }
 
@@ -901,7 +911,7 @@ a:hover, a:focus {
     line-height: 26px;
     padding: 0 30px;
     font-size: 16px;
-    font-family: "Lato";
+    font-family: Lato;
     color: #f1d204;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
@@ -926,7 +936,7 @@ a:hover, a:focus {
     color: #fff;
 }
 
-#latest-news .section-content .post .post-button .fa {
+#latest-news .section-content .post .post-button :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
     margin-right: 10px;
 }
 
@@ -946,7 +956,7 @@ a.button {
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
-    font-family: "Lato";
+    font-family: Lato;
 }
 
 #latest-news .latest-news-button:hover,
@@ -962,7 +972,7 @@ a.button:focus {
     margin-left: 15px;
 }
 
-#latest-news .latest-news-button .fa {
+#latest-news .latest-news-button :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
     margin-right: 12px;
 }
 
@@ -1001,11 +1011,10 @@ a.button:focus {
     width: 100%;
     display: block;
     margin-bottom: 10px;
-    line-height: 1;
     font-weight: 700;
     font-size: 65px;
     color: #fff;
-    font-family: "Poppins";
+    font-family: Poppins;
     line-height: 70px;
 }
 
@@ -1016,7 +1025,7 @@ a.button:focus {
     font-size: 20px;
     color: #fff;
     text-transform: uppercase;
-    font-family: "Poppins";
+    font-family: Poppins;
     font-weight: 700;
 }
 
@@ -1075,7 +1084,7 @@ a.button:focus {
 #team .section-content .person .person-content p {
     width: 100%;
     margin: 0 0 10px 0;
-    color: #8c9597;
+    color: #6b7375;
     line-height: 20px;
 }
 
@@ -1164,7 +1173,7 @@ a.button:focus {
     font-weight: 400;
     font-size: 16px;
     color: #f1d204;
-    font-family: "Lato";
+    font-family: Lato;
     line-height: 26px;
 }
 
@@ -1180,12 +1189,12 @@ a.button:focus {
     display: block;
     line-height: 1.6;
     font-size: 16px;
-    color: #8c9597;
-    font-family: "Lato";
+    color: #6b7375;
+    font-family: Lato;
 }
 
 #contact-us .section-content .contact-us-box .box-right span a {
-    color: #8c9597;
+    color: #6b7375;
     text-decoration: none;
 }
 
@@ -1202,7 +1211,7 @@ a.button:focus {
 #contact-us .section-content .contact-us-social a {
     margin-left: 15px;
     font-size: 15px;
-    color: #8c9597;
+    color: #6b7375;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
@@ -1289,24 +1298,24 @@ a.button:focus {
     padding: 0 20px;
     border: 1px solid #e1e1e1;
     outline: 0;
-    font-family: "Lato", sans-serif;
+    font-family: Lato, sans-serif;
     font-size: 16px;
-    color: #8c9597;
+    color: #6b7375;
     display: block;
     font-weight: 400;
     line-height: 25px;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-text::-webkit-input-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-text::-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-text:-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-textarea {
@@ -1319,28 +1328,27 @@ a.button:focus {
     outline: 0;
     resize: none;
     display: block;
-    color: #8c9597;
+    color: #6b7375;
     font-weight: 400;
-    font-family: "Lato", sans-serif;
+    font-family: Lato, sans-serif;
     font-size: 16px;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-textarea::-webkit-input-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-textarea::-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-textarea:-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #contact-us .section-content .wpcf7-form p .wpcf7-submit {
     width: auto;
     height: 44px;
-    background-color: #fff;
     margin: 40px 0 0 0;
     padding: 0 60px;
     border: none;
@@ -1354,7 +1362,7 @@ a.button:focus {
     -moz-transition: all 0.3s;
     transition: all 0.3s;
     outline: 0;
-    font-family: "Lato";
+    font-family: Lato;
     font-size: 16px;
     text-transform: initial;
 }
@@ -1375,7 +1383,7 @@ a.button:focus {
     font-size: 16px;
     line-height: 26px;
     font-weight: 400;
-    font-family: "Lato";
+    font-family: Lato;
 }
 
 /* 11. Footer */
@@ -1406,7 +1414,7 @@ a.button:focus {
 .copyright {
     width: 100%;
     line-height: 1.2;
-    color: #8c9597;
+    color: #6b7375;
     margin-bottom: 0;
     font-size: 15px;
 }
@@ -1416,7 +1424,7 @@ a.button:focus {
 }
 
 .copyright a {
-    color: #8c9597;
+    color: #6b7375;
     text-decoration: none;
 }
 
@@ -1442,9 +1450,9 @@ a.button:focus {
 
 #footer .widget .widget-title h3 {
     line-height: 1.15;
-    color: #ffffff;
+    color: #fff;
     font-size: 20px;
-    font-family: "Lato";
+    font-family: Lato;
     text-transform: initial;
 }
 
@@ -1482,7 +1490,7 @@ a.button:focus {
 }
 
 #footer .widget table tbody tr td:not(.pad) {
-    color: #eeeeee;
+    color: #eee;
     padding: 0;
     border: 3px solid #363636;
     background-color: transparent;
@@ -1549,7 +1557,7 @@ a.button:focus {
     color: #f1d204;
 }
 
-#blog .blog-post .blog-post-meta .post-meta-author .fa {
+#blog .blog-post .blog-post-meta .post-meta-author :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
     margin-right: 6px;
     color: #f1d204;
 }
@@ -1557,31 +1565,31 @@ a.button:focus {
 #blog .blog-post .blog-post-meta .post-meta-time,
 #blog .blog-post .blog-post-meta .post-meta-categories {
     margin-left: 20px;
-    color: #888;
+    color: #757575;
 }
 
 #blog .blog-post .blog-post-meta .post-meta-categories a {
-    color: #888;
+    color: #757575;
 }
 
-#blog .blog-post .blog-post-meta .post-meta-time .fa,
-#blog .blog-post .blog-post-meta .post-meta-categories .fa {
+#blog .blog-post .blog-post-meta .post-meta-time :is(.fa, .fa-solid, .fa-regular, .fa-brands),
+#blog .blog-post .blog-post-meta .post-meta-categories :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
     margin-right: 6px;
     color: #f1d204;
 }
 
 #blog .blog-post .blog-post-meta .post-meta-comments {
     margin-left: 40px;
-    color: #888;
+    color: #757575;
 }
 
-#blog .blog-post .blog-post-meta .post-meta-comments .fa {
+#blog .blog-post .blog-post-meta .post-meta-comments :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
     margin-right: 6px;
     color: #f1d204;
 }
 
 #blog .blog-post .blog-post-meta .post-meta-comments a {
-    color: #888;
+    color: #757575;
 }
 
 #blog .blog-post .blog-post-entry {
@@ -1620,11 +1628,11 @@ a.button:focus {
 #blog .blog-post .blog-post-tags li {
     margin: 0;
     display: inline-block;
-    color: #888;
+    color: #757575;
 }
 
 #blog .blog-post .blog-post-tags li a {
-    color: #888;
+    color: #757575;
 }
 
 #blog .blog-post .social-links-list {
@@ -1701,15 +1709,11 @@ a.button:focus {
 
 #blog .blog-post .blog-post-author p {
     line-height: 1.6;
-    color: #888;
+    color: #757575;
 }
 
 #blog .nav-links {
     width: 100%;
-}
-
-.navigation .screen-reader-text {
-    display: none;
 }
 
 #blog .nav-links .page-numbers {
@@ -1763,6 +1767,18 @@ a.button:focus {
     padding: 0;
 }
 
+/* Block widgets bring their own h2; size it like a classic widget title. */
+.widget_block h2.wp-block-heading {
+    margin: 0 0 20px 0;
+    padding: 0;
+    line-height: 32px;
+    font-size: 23px;
+}
+
+#footer .widget_block h2.wp-block-heading {
+    color: #fff;
+}
+
 .widget img {
     max-width: 100%;
     height: auto;
@@ -1788,8 +1804,9 @@ a.button:focus {
 
 .widget:not(.widget_rss):not(.widget_recent_comments):not(.widget_recent_entries) ul li:before {
     content: "\f105";
-    font-family: "FontAwesome";
-    color: #8c979e;
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
+    color: #6b7375;
     position: absolute;
     left: 0;
     line-height: 38px;
@@ -1819,10 +1836,6 @@ a.button:focus {
     color: #6a4d8a;
 }
 
-.widget .screen-reader-text {
-    width: 100%;
-}
-
 .widget select {
     width: 100%;
 }
@@ -1837,11 +1850,10 @@ a.button:focus {
 
 .widget table caption {
     color: #fff;
-    margin-bottom: 10px;
     font-weight: 700;
     font-size: 20px;
     line-height: 24px;
-    font-family: "Poppins";
+    font-family: Poppins;
     width: 100%;
     background-color: #f1d204;
     text-align: center;
@@ -1849,13 +1861,13 @@ a.button:focus {
 }
 
 .widget table thead {
-    color: #888;
+    color: #757575;
 }
 
 .widget table thead th {
     padding-bottom: 5px;
     text-align: center;
-    color: #333333;
+    color: #333;
 }
 
 .widget table thead th:last-child {
@@ -1863,7 +1875,7 @@ a.button:focus {
 }
 
 .widget table tbody {
-    color: #8c9597;
+    color: #6b7375;
     text-align: center;
     font-size: 14px;
     font-weight: 400;
@@ -1953,7 +1965,8 @@ a.button:focus {
 
 .widget table td#prev a:before,
 .widget table td#next a:before {
-    font-family: "FontAwesome";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
     color: #fff;
     display: inline-block;
     font-size: 16px;
@@ -1990,37 +2003,40 @@ a.button:focus {
     right: 20px;
     top: 5px;
     color: #a9afb1;
-    font-family: "FontAwesome";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
     font-size: 15px;
 }
 
-.widget .search-form .search-form-box #s {
+.widget .search-form .search-form-box .search-field {
     padding-right: 40px;
     background-color: transparent;
     border-radius: 5px;
 }
 
-.widget .search-form .search-form-box #searchsubmit {
+.widget .search-form .search-form-box .search-submit {
     height: 37px;
     line-height: 37px;
     background: transparent;
     margin-right: 10px;
     padding: 0;
     border: none;
-    font-family: "FontAwesome";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
     color: #000;
     float: left;
+    display: none;
 }
 
-.widget .search-form .search-form-box #s::-webkit-input-placeholder {
+.widget .search-form .search-form-box .search-field::-webkit-input-placeholder {
     color: #a9afb1;
 }
 
-.widget .search-form .search-form-box #s::-moz-placeholder {
+.widget .search-form .search-form-box .search-field::-moz-placeholder {
     color: #a9afb1;
 }
 
-.widget .search-form .search-form-box #s:-moz-placeholder {
+.widget .search-form .search-form-box .search-field:-moz-placeholder {
     color: #a9afb1;
 }
 
@@ -2074,7 +2090,7 @@ a.button:focus {
     display: block;
     font-size: 20px;
     font-weight: 700;
-    font-family: "Poppins";
+    font-family: Poppins;
     line-height: 24px;
 }
 
@@ -2087,7 +2103,7 @@ a.button:focus {
 .widget_tag_cloud .tagcloud a:after {
     display: inline-block;
     content: "/";
-    color: #8c9597;
+    color: #6b7375;
     margin-left: 5px;
 }
 
@@ -2104,7 +2120,7 @@ span.rss-date,
 .post-date {
     font-size: 12px;
     font-weight: 400;
-    font-family: "Lato";
+    font-family: Lato;
     line-height: 24px;
     display: block;
 }
@@ -2112,7 +2128,8 @@ span.rss-date,
 span.rss-date:before,
 .post-date:before {
     content: "\f017";
-    font-family: "FontAwesome";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 400;
     color: #f1d204;
     display: inline-block;
     margin-right: 5px;
@@ -2203,6 +2220,11 @@ span.rss-date:before,
     margin-right: auto;
 }
 
+/* A centred figure (image or embed block) shrinks to its content so it can centre. */
+.markup-format figure.aligncenter {
+    display: table;
+}
+
 .markup-format .wp-caption {
     max-width: 100%;
     height: auto;
@@ -2255,7 +2277,7 @@ span.rss-date:before,
     padding: 0;
     line-height: 50px;
     font-size: 30px;
-    color: #888;
+    color: #757575;
     border-left: none;
 }
 
@@ -2266,7 +2288,7 @@ span.rss-date:before,
 .markup-format cite {
     font-style: normal;
     font-size: 14px;
-    color: #888;
+    color: #757575;
 }
 
 .markup-format blockquote p {
@@ -2278,7 +2300,7 @@ span.rss-date:before,
     list-style-type: disc;
 }
 
-.markup-format ul:not(.wc_payment_methods) li {
+.markup-format ul:not(.wc_payment_methods, [class*="wc-block"]) li {
     list-style-position: inside;
     list-style-type: disc;
 }
@@ -2306,13 +2328,13 @@ span.rss-date:before,
 }
 
 .markup-format table caption {
-    color: #888;
+    color: #757575;
     margin-bottom: 10px;
     font-weight: 700;
 }
 
 .markup-format table thead {
-    color: #888;
+    color: #757575;
 }
 
 .markup-format table thead th {
@@ -2327,7 +2349,7 @@ span.rss-date:before,
 }
 
 .markup-format table tbody {
-    color: #888;
+    color: #757575;
     text-align: center;
     font-size: 12px;
     font-weight: 300;
@@ -2356,7 +2378,7 @@ span.rss-date:before,
 
 .markup-format table tfoot {
     font-size: 14px;
-    color: #888;
+    color: #757575;
 }
 
 .markup-format table tfoot #next {
@@ -2364,7 +2386,7 @@ span.rss-date:before,
 }
 
 .markup-format table a {
-    color: #888;
+    color: #757575;
     text-decoration: underline;
 }
 
@@ -2378,7 +2400,7 @@ span.rss-date:before,
 }
 
 .markup-format table td#prev a {
-    color: #888;
+    color: #757575;
 }
 
 .markup-format table td#next {
@@ -2386,7 +2408,7 @@ span.rss-date:before,
 }
 
 .markup-format table td#next a {
-    color: #888;
+    color: #757575;
 }
 
 /* 15. Related Posts */
@@ -2531,6 +2553,31 @@ span.rss-date:before,
     margin: 0 0 30px 0;
 }
 
+.post-password-form p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.post-password-form label {
+    flex: 1 1 240px;
+    margin: 0;
+}
+
+#comments #respond .comment-form .comment-form-cookies-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 0 30px 0;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+#comments #respond .comment-form .comment-form-cookies-consent input {
+    margin: 4px 0 0 0;
+}
+
 #comments #respond .comment-form textarea {
     height: 125px;
     margin-bottom: 30px;
@@ -2538,31 +2585,34 @@ span.rss-date:before,
 }
 
 #comments #respond .comment-form textarea::-webkit-input-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #comments #respond .comment-form textarea::-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #comments #respond .comment-form textarea:-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #comments #respond .comment-form input.input-full::-webkit-input-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #comments #respond .comment-form input.input-full::-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 #comments #respond .comment-form input.input-full:-moz-placeholder {
-    color: #8c9597;
+    color: #6b7375;
 }
 
 input[type="text"],
 input[type="email"],
+input[type="url"],
+input[type="tel"],
+input[type="password"],
 input[type="number"],
 input[type="search"],
 textarea {
@@ -2570,9 +2620,9 @@ textarea {
     padding: 5px 10px;
     border: 1px solid #d7d7d7;
     outline: 0;
-    font-family: "Lato", sans-serif;
+    font-family: Lato, sans-serif;
     font-weight: 400;
-    color: #8c9597;
+    color: #6b7375;
     resize: none;
     display: block;
     font-size: 16px;
@@ -2588,14 +2638,14 @@ textarea:hover {
 }
 
 #comments #respond .comment-form #input-submit,
-input[type=submit] {
+input[type="submit"] {
     width: auto;
     height: 36px;
     background-color: #f1d204;
     padding: 0 40px;
     display: inline-block;
     border: 0 none;
-    font-family: "Lato", sans-serif;
+    font-family: Lato, sans-serif;
     font-weight: 700;
     color: #fff;
     -webkit-transition: all 0.3s;
@@ -2606,8 +2656,8 @@ input[type=submit] {
 
 #comments #respond .comment-form #input-submit:hover,
 #comments #respond .comment-form #input-submit:focus,
-input[type=submit]:hover,
-input[type=submit]:focus,
+input[type="submit"]:hover,
+input[type="submit"]:focus,
 #latest-news .latest-news-button:hover,
 #latest-news .latest-news-button:focus,
 #header .bottom-header .header-button-two:hover,
@@ -2628,9 +2678,6 @@ a.button:focus {
     opacity: 0.9;
 }
 
-.widget .search-form .search-form-box #searchsubmit {
-    display: none;
-}
 
 /* Parallax Widget */
 .align-children {
@@ -2716,12 +2763,12 @@ p.mb32 {
         float: right;
     }
 
-    .open-responsive-menu .fa {
+    .open-responsive-menu :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
         font-size: 22px;
         color: #fff;
 	}
 
-	.open-responsive-menu:focus .fa {
+	.open-responsive-menu:focus :is(.fa, .fa-solid, .fa-regular, .fa-brands) {
 		color: #f1d204;
 	}
 
@@ -2855,10 +2902,6 @@ p.mb32 {
     #team .widget_illdy_person:nth-child(2),
     #team .widget_illdy_person:nth-child(3) {
         margin-top: 40px;
-    }
-
-    #contact-us .section-content .contact-us-box .box-left {
-        width: 50%;
     }
 
     #contact-us .section-content .contact-us-box .box-left {
@@ -3011,11 +3054,6 @@ p.mb32 {
 
 /* Homepage ssctions background image */
 
-#latest-news {
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
 
 #full-width:before,
 #testimonials:before,
@@ -3055,10 +3093,6 @@ header#header {
     z-index: 1;
 }
 
-#header .top-header {
-    position: relative;
-    z-index: 3;
-}
 
 .responsive-menu,
 #header .bottom-header {
@@ -3088,6 +3122,10 @@ header#header {
 }
 
 .illdy-slider-navigation .illdy-navigation-button {
+    padding: 0;
+    border: 0;
+    color: #6b7375;
+    cursor: pointer;
     width: 50px;
     height: 50px;
     text-align: center;
@@ -3104,11 +3142,11 @@ header#header {
     color: #545454;
 }
 
-.illdy-slider-navigation .illdy-navigation-button#prev {
+.illdy-slider-navigation .illdy-slider-prev {
     left: 0;
 }
 
-.illdy-slider-navigation .illdy-navigation-button#next {
+.illdy-slider-navigation .illdy-slider-next {
     right: 0;
 }
 
@@ -3129,12 +3167,100 @@ header#header {
 }
 
 .screen-reader-text {
-    clip: rect(1px, 1px, 1px, 1px);
+    border: 0;
+    clip-path: inset(50%);
     height: 1px;
+    margin: -1px;
     overflow: hidden;
+    padding: 0;
     position: absolute !important;
     width: 1px;
     word-wrap: normal !important;
+}
+
+.skip-link:focus {
+    clip-path: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 15px 23px;
+    top: 5px;
+    left: 5px;
+    z-index: 100000;
+    background-color: #fff;
+    color: #545454;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: normal;
+    text-decoration: none;
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Keyboard focus. Several controls set outline: 0, which left no visible focus at all. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid;
+    outline-offset: 2px;
+}
+
+/* The view's h1, at the size of the h2 the archive title used to be. */
+#header .bottom-header h1.archive-title {
+    margin: 20px 0 10px 0;
+    line-height: 70px;
+    font-size: 65px;
+}
+
+#header .bottom-header .illdy-page-title {
+    margin: 0 0 29px 0;
+    line-height: 84px;
+    font-weight: 700;
+    font-size: 80px;
+    color: #fff;
+    font-family: Poppins;
+}
+
+/* Post titles in lists are headings now; the link inside keeps its own styling. */
+/* Sticky posts were indistinguishable from the rest of the list. */
+#blog .blog-post .sticky-label {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 2px 10px;
+    background-color: #545454;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 20px;
+    text-transform: uppercase;
+}
+
+#blog .blog-post .blog-post-heading {
+    margin: 0;
+    font: inherit;
+    line-height: inherit;
+}
+
+@media only screen and (max-width: 767px) {
+    #header .bottom-header h1.archive-title {
+        font-size: 60px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    body #header .bottom-header .illdy-page-title {
+        line-height: 54px;
+        font-size: 50px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    body #header .bottom-header .illdy-page-title {
+        line-height: 44px;
+        font-size: 40px;
+    }
 }
 
 a.illdy-top {

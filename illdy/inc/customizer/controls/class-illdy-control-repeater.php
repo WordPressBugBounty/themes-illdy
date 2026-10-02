@@ -105,9 +105,9 @@ if ( ! class_exists( 'Illdy_Control_Repeater' ) ) {
 		 * Renders the control.
 		 */
 		public function render_content() {
-			$rows       = $this->rows();
-			$row_label  = $this->row_label ? $this->row_label : esc_html__( 'Item', 'illdy' );
-			$add_label  = $this->button_label ? $this->button_label : esc_html__( 'Add new', 'illdy' );
+			$rows      = $this->rows();
+			$row_label = $this->row_label ? $this->row_label : esc_html__( 'Item', 'illdy' );
+			$add_label = $this->button_label ? $this->button_label : esc_html__( 'Add new', 'illdy' );
 			?>
 			<?php if ( ! empty( $this->label ) ) : ?>
 				<span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>

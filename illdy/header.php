@@ -7,66 +7,64 @@
  */
 ?>
 <?php
-$logo_id                   = get_theme_mod( 'custom_logo' );
-$logo_image                = wp_get_attachment_image_src( $logo_id, 'full' );
-$logo_width                = get_theme_mod( 'illdy_logo_width' );
-$text_logo                 = get_theme_mod( 'illdy_text_logo', __( 'Illdy', 'illdy' ) );
-$jumbotron_general_image   = get_theme_mod( 'illdy_jumbotron_general_image', esc_url( get_template_directory_uri() . '/layout/images/front-page/front-page-header.png' ) );
-$jumbotron_type            = get_theme_mod( 'illdy_jumbotron_background_type', 'image' );
-$jumbotron_single_image    = get_theme_mod( 'illdy_jumbotron_enable_featured_image', false );
-$jumbotron_parallax_enable = get_theme_mod( 'illdy_jumbotron_enable_parallax_effect', true );
-$preloader_enable          = get_theme_mod( 'illdy_preloader_enable', 1 );
-$user_agent                = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
-$is_mobile_safari          = '' !== $user_agent && preg_match( '/(iPod|iPhone|iPad)/', $user_agent );
+$illdy_logo_id                   = get_theme_mod( 'custom_logo' );
+$illdy_logo_image                = wp_get_attachment_image_src( $illdy_logo_id, 'full' );
+$illdy_logo_width                = get_theme_mod( 'illdy_logo_width', 150 ); // The Customizer's default; unset, the logo rendered at full size.
+$illdy_text_logo                 = get_theme_mod( 'illdy_text_logo', __( 'Illdy', 'illdy' ) );
+$illdy_jumbotron_general_image   = get_theme_mod( 'illdy_jumbotron_general_image', esc_url( get_template_directory_uri() . '/layout/images/front-page/front-page-header.jpg' ) );
+$illdy_jumbotron_type            = get_theme_mod( 'illdy_jumbotron_background_type', 'image' );
+$illdy_jumbotron_single_image    = get_theme_mod( 'illdy_jumbotron_enable_featured_image', false );
+$illdy_jumbotron_parallax_enable = get_theme_mod( 'illdy_jumbotron_enable_parallax_effect', true );
+$illdy_preloader_enable          = get_theme_mod( 'illdy_preloader_enable', 1 );
+$illdy_user_agent                = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+$illdy_is_mobile_safari          = '' !== $illdy_user_agent && preg_match( '/(iPod|iPhone|iPad)/', $illdy_user_agent );
 // Falls back to the shipped default when the stored value is not a valid hex colour.
-$accent_color              = sanitize_hex_color( get_theme_mod( 'epsilon_accent_color', '#f1d204' ) );
-$accent_color              = $accent_color ? $accent_color : '#f1d204';
+$illdy_accent_color = sanitize_hex_color( get_theme_mod( 'epsilon_accent_color', '#f1d204' ) );
+$illdy_accent_color = $illdy_accent_color ? $illdy_accent_color : '#f1d204';
 
-$style = '';
+$illdy_style = '';
 
-if ( 'page' == get_option( 'show_on_front' ) && is_front_page() ) {
-	if ( $jumbotron_general_image && 'image' == $jumbotron_type ) {
-		$style = 'background-image: url(' . esc_url( $jumbotron_general_image ) . ');';
+if ( 'page' === get_option( 'show_on_front' ) && is_front_page() ) {
+	if ( $illdy_jumbotron_general_image && 'image' === $illdy_jumbotron_type ) {
+		$illdy_style = 'background-image: url(' . esc_url( $illdy_jumbotron_general_image ) . ');';
 	}
-} elseif ( ( is_single() || is_page() ) && true == $jumbotron_single_image ) {
+} elseif ( ( is_single() || is_page() ) && $illdy_jumbotron_single_image ) {
 
 	global $post;
 	if ( $post instanceof WP_Post && has_post_thumbnail( $post->ID ) ) {
-		$style = 'background-image: url(' . esc_url( get_the_post_thumbnail_url( $post->ID, 'full' ) ) . ');';
+		$illdy_style = 'background-image: url(' . esc_url( get_the_post_thumbnail_url( $post->ID, 'full' ) ) . ');';
 	} elseif ( has_header_image() ) {
-		$style = 'background-image: url(' . esc_url( get_header_image() ) . ');';
+		$illdy_style = 'background-image: url(' . esc_url( get_header_image() ) . ');';
 	} else {
-		$style = 'background-color: ' . $accent_color . ';';
+		$illdy_style = 'background-color: ' . $illdy_accent_color . ';';
 	}
 } elseif ( has_header_image() ) {
-	$style = 'background-image: url(' . esc_url( get_header_image() ) . ');';
+	$illdy_style = 'background-image: url(' . esc_url( get_header_image() ) . ');';
 } else {
-	$style = 'background-color: ' . $accent_color . ';';
+	$illdy_style = 'background-color: ' . $illdy_accent_color . ';';
 }
-
-$url = get_theme_mod( 'header_image', get_theme_support( 'custom-header', 'default-image' ) );
 
 // append the parallax effect
-if ( $is_mobile_safari ) {
-	$style .= 'background-attachment: scroll;';
-} elseif ( $jumbotron_parallax_enable ) {
-	$style .= 'background-attachment: fixed;';
+if ( $illdy_is_mobile_safari ) {
+	$illdy_style .= 'background-attachment: scroll;';
+} elseif ( $illdy_jumbotron_parallax_enable ) {
+	$illdy_style .= 'background-attachment: fixed;';
 }
 
-if ( ( is_single() || is_page() || is_archive() ) && get_theme_mod( 'illdy_archive_page_background_stretch' ) == 2 ) {
-	$style .= 'background-size:contain;background-repeat:no-repeat;';
+if ( ( is_single() || is_page() || is_archive() ) && 2 === (int) get_theme_mod( 'illdy_archive_page_background_stretch' ) ) {
+	$illdy_style .= 'background-size:contain;background-repeat:no-repeat;';
 }
 
-$header_class = '';
+$illdy_header_class = '';
 
-if ( 'page' == get_option( 'show_on_front' ) && is_front_page() ) {
-	$header_class = 'header-front-page';
+if ( 'page' === get_option( 'show_on_front' ) && is_front_page() ) {
+	$illdy_header_class = 'header-front-page';
 } else {
-	$header_class = 'header-blog';
+	$illdy_header_class = 'header-blog';
 }
 
 if ( get_theme_mod( 'illdy_sticky_header_enable', false ) ) {
-	$header_class .= ' header-has-sticky-menu';
+	$illdy_header_class .= ' header-has-sticky-menu';
 }
 
 ?>
@@ -74,27 +72,29 @@ if ( get_theme_mod( 'illdy_sticky_header_enable', false ) ) {
 <html <?php language_attributes(); ?>>
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<?php // Zoom is no longer disabled: maximum-scale=1 and user-scalable=no fail WCAG 1.4.4. ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
-<?php if ( 1 == $preloader_enable && ! is_customize_preview() ) : ?>
+<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'illdy' ); ?></a>
+<?php if ( 1 === (int) $illdy_preloader_enable && ! is_customize_preview() ) : ?>
 	<div class="pace-overlay"></div>
 <?php endif; ?>
-<header id="header" class="<?php echo esc_attr( $header_class ); ?>" style="<?php echo esc_attr( $style ); ?>">
+<header id="header" class="<?php echo esc_attr( $illdy_header_class ); ?>" style="<?php echo esc_attr( $illdy_style ); ?>">
 	<div class="top-header">
 		<div class="container">
 			<div class="row">
 				<div class="col-sm-4 col-xs-8">
 
-					<?php if ( ! empty( $logo_image ) ) : ?>
+					<?php if ( ! empty( $illdy_logo_image ) ) : ?>
 						<a href="<?php echo esc_url( home_url() ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
-							<img class="header-logo-img" src="<?php echo esc_url( $logo_image[0] ); ?>" width="<?php echo $logo_width ? esc_attr( $logo_width ) : ''; ?>"/>
+							<img class="header-logo-img" src="<?php echo esc_url( $illdy_logo_image[0] ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"<?php echo $illdy_logo_width ? ' width="' . esc_attr( absint( $illdy_logo_width ) ) . '"' : ''; ?> />
 						</a>
 					<?php else : ?>
-					<?php if ( get_option( 'show_on_front' ) == 'page' ) { ?>
-						<a href="<?php echo esc_url( home_url() ); ?>" title="<?php echo esc_attr( $text_logo ); ?>" class="header-logo"><?php echo esc_html( $text_logo ); ?></a>
+						<?php if ( 'page' === get_option( 'show_on_front' ) ) { ?>
+						<a href="<?php echo esc_url( home_url() ); ?>" title="<?php echo esc_attr( $illdy_text_logo ); ?>" class="header-logo"><?php echo esc_html( $illdy_text_logo ); ?></a>
 					<?php } else { ?>
 						<a href="<?php echo esc_url( home_url() ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="header-logo"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a>
 					<?php } ?>
@@ -102,7 +102,7 @@ if ( get_theme_mod( 'illdy_sticky_header_enable', false ) ) {
 
 				</div><!--/.col-sm-2-->
 				<div class="col-sm-8 col-xs-4">
-					<nav class="header-navigation">
+					<nav class="header-navigation" aria-label="<?php esc_attr_e( 'Primary', 'illdy' ); ?>">
 						<?php
 						wp_nav_menu(
 							array(
@@ -115,12 +115,12 @@ if ( get_theme_mod( 'illdy_sticky_header_enable', false ) ) {
 						);
 						?>
 					</nav>
-					<button class="open-responsive-menu"><i class="fa fa-bars"></i></button>
+					<button type="button" class="open-responsive-menu" aria-expanded="false" aria-controls="illdy-responsive-menu"><i class="fa-solid fa-bars" aria-hidden="true"></i><span class="screen-reader-text"><?php esc_html_e( 'Menu', 'illdy' ); ?></span></button>
 				</div><!--/.col-sm-10-->
 			</div><!--/.row-->
 		</div><!--/.container-->
 	</div><!--/.top-header-->
-	<nav class="responsive-menu">
+	<nav class="responsive-menu" id="illdy-responsive-menu" aria-label="<?php esc_attr_e( 'Primary', 'illdy' ); ?>">
 		<ul>
 			<?php
 			wp_nav_menu(
@@ -139,10 +139,10 @@ if ( get_theme_mod( 'illdy_sticky_header_enable', false ) ) {
 		</ul>
 	</nav><!--/.responsive-menu-->
 	<?php
-	if ( get_option( 'show_on_front' ) == 'page' && is_front_page() ) {
-		if ( 'video' == $jumbotron_type ) {
+	if ( 'page' === get_option( 'show_on_front' ) && is_front_page() ) {
+		if ( 'video' === $illdy_jumbotron_type ) {
 			get_template_part( 'sections/front-page', 'header-video' );
-		} elseif ( 'slider' == $jumbotron_type ) {
+		} elseif ( 'slider' === $illdy_jumbotron_type ) {
 			get_template_part( 'sections/front-page', 'header-slider' );
 		}
 		get_template_part( 'sections/front-page', 'bottom-header' );
@@ -151,3 +151,4 @@ if ( get_theme_mod( 'illdy_sticky_header_enable', false ) ) {
 	}
 	?>
 </header><!--/#header-->
+<main id="content" class="site-main">

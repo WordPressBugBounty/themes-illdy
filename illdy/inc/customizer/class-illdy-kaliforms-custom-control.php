@@ -16,11 +16,7 @@ if ( ! class_exists( 'Illdy_Kaliforms_Custom_Control' ) ) {
 		 */
 		public function active_callback() {
 
-			if ( defined('KALIFORMS_VERSION') ) {
-				return true;
-			} else {
-				return false;
-			}
+			return defined( 'KALIFORMS_VERSION' );
 		}
 
 		public function get_kaliforms_forms() {
@@ -31,15 +27,15 @@ if ( ! class_exists( 'Illdy_Kaliforms_Custom_Control' ) ) {
 			// check if Kaliforms is activated
 			if ( $this->active_callback() ) {
 
-				$args = array(
-					'post_type'      => 'kaliforms_forms',
-					'post_status'    => 'publish',
-					'posts_per_page' => -1,
+				$kali_forms = get_posts(
+					array(
+						'post_type'      => 'kaliforms_forms',
+						'post_status'    => 'publish',
+						'posts_per_page' => 100,
+					)
 				);
-
-				$kali_forms = new WP_Query( $args );
-				if ( $kali_forms->have_posts() ) {
-					foreach ( $kali_forms->posts as $kali_form ) {
+				if ( $kali_forms ) {
+					foreach ( $kali_forms as $kali_form ) {
 						$contact_forms[ $kali_form->ID ] = $kali_form->post_title;
 					}
 				} else {
@@ -52,16 +48,24 @@ if ( ! class_exists( 'Illdy_Kaliforms_Custom_Control' ) ) {
 		public function render_content() {
 			$contact_forms = $this->get_kaliforms_forms();
 
-			if ( ! empty( $contact_forms ) ) { ?>
-				<span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
-				<select <?php esc_url( $this->link() ); ?> style="width:100%;">
-				<?php
-				echo '<option value="default">' . __( 'Select your contact form', 'illdy' ) . '</option>';
-				foreach ( $contact_forms as $form_id => $form_title ) {
-					echo '<option value="' . sanitize_key( $form_id ) . '" >' . esc_html( $form_title ) . '</option>';
-				}
-				echo '</select>';
+			if ( empty( $contact_forms ) ) {
+				return;
 			}
+
+			// The saved form was never marked selected, so the picker always showed
+			// "Select your contact form" and saving anything else reset it.
+			$current = (string) $this->value();
+			?>
+			<label>
+				<span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+				<select <?php $this->link(); ?> style="width:100%;">
+					<option value="default"<?php selected( $current, 'default' ); ?>><?php esc_html_e( 'Select your contact form', 'illdy' ); ?></option>
+					<?php foreach ( $contact_forms as $form_id => $form_title ) : ?>
+						<option value="<?php echo esc_attr( $form_id ); ?>"<?php selected( $current, (string) $form_id ); ?>><?php echo esc_html( $form_title ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</label>
+			<?php
 		}
 	}
-}// End if().
+}

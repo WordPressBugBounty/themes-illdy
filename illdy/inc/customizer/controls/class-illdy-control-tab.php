@@ -4,9 +4,6 @@ if ( ! class_exists( 'Illdy_Control_Tab' ) ) {
 	class Illdy_Control_Tab extends WP_Customize_Control {
 		public $type    = 'illdy-tab';
 		public $buttons = '';
-		public function __construct( WP_Customize_Manager $manager, $id, array $args ) {
-			parent::__construct( $manager, $id, $args );
-		}
 		public function to_json() {
 			parent::to_json();
 			$first             = true;
@@ -30,11 +27,10 @@ if ( ! class_exists( 'Illdy_Control_Tab' ) ) {
 			}
 			$this->json['buttons'] = $formatted_buttons;
 			$this->json['fields']  = $all_fields;
-
 		}
 
 		public function content_template() {
-	?>
+			?>
 			<div class="illdy-tabs">
 				<# if ( data.buttons ) { #>
 					<div class="tabs">
@@ -46,7 +42,7 @@ if ( ! class_exists( 'Illdy_Control_Tab' ) ) {
 				<# } #>
 			</div>
 			<div class="illdy-after-tab"><div></div></div>
-		<?php
+			<?php
 		}
 	}
-}// End if().
+}

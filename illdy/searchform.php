@@ -19,10 +19,14 @@
  * an empty preview there, which is why the Search widget showed "No preview available".
  */
 ?>
+<?php
+// Unique per form: a page can carry several (the sidebar and a no-results message).
+$illdy_search_id = wp_unique_id( 'illdy-search-' );
+?>
 <form role="search" method="get" class="search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-	<label class="screen-reader-text" for="s"><?php echo esc_html_x( 'Search for:', 'label', 'illdy' ); ?></label>
+	<label class="screen-reader-text" for="<?php echo esc_attr( $illdy_search_id ); ?>"><?php echo esc_html_x( 'Search for:', 'label', 'illdy' ); ?></label>
 	<div class="search-form-box">
-		<input type="submit" id="searchsubmit" value="" aria-label="<?php echo esc_attr_x( 'Search', 'submit button', 'illdy' ); ?>" />
-		<input type="search" id="s" placeholder="<?php echo esc_attr_x( 'Search...', 'placeholder', 'illdy' ); ?>" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" title="<?php echo esc_attr_x( 'Search for:', 'label', 'illdy' ); ?>" />
+		<input type="submit" class="search-submit" value="" aria-label="<?php echo esc_attr_x( 'Search', 'submit button', 'illdy' ); ?>" />
+		<input type="search" class="search-field" id="<?php echo esc_attr( $illdy_search_id ); ?>" placeholder="<?php echo esc_attr_x( 'Search...', 'placeholder', 'illdy' ); ?>" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" />
 	</div><!--/.search-form-box-->
 </form><!--/.search-form-->
